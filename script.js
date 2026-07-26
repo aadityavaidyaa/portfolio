@@ -8,44 +8,9 @@
   /* ---------------------------------------------------------- */
   /* Data — swap the placeholder hrefs (#) for your real links   */
   /* ---------------------------------------------------------- */
-  const WORK = [
-    {
-      title: "NationRise",
-      desc: "Browser-based grand strategy game — 32 nations, alliance betrayal, espionage, a naval and missile tech tree, all rendered on a zoom/pan map with a cinematic news ticker.",
-      tags: ["React", "Simulation", "Game Systems"],
-      year: "2025"
-    },
-    {
-      title: "Cosmic Byte AR",
-      desc: "Android AR app that detects a physical game controller via a trained OpenCV model and overlays live button labels and stats on top of it.",
-      tags: ["OpenCV", "AR", "Android"],
-      year: "2026"
-    },
-    {
-      title: "Neon Pong",
-      desc: "Cyberpunk canvas game with a 16-opponent career mode, ranked ELO ladder, and real-time online multiplayer over a WebSocket relay.",
-      tags: ["Canvas", "WebSockets", "Game Dev"],
-      year: "2025"
-    },
-    {
-      title: "QT Robot Companion",
-      desc: "A desktop companion app pairing a local LLM with natural-sounding speech synthesis for low-latency, offline-friendly conversation.",
-      tags: ["Python", "LLM", "TTS"],
-      year: "2025"
-    },
-    {
-      title: "Faction Wars Datapack",
-      desc: "A Minecraft datapack turning a survival server into a two-faction political sim — elections, territory capture, economy, and a spy/betrayal system.",
-      tags: ["Minecraft", "Datapack", "Systems Design"],
-      year: "2025"
-    },
-    {
-      title: "Signal Loss",
-      desc: "A sci-fi psychological-thriller short built with an AI-assisted, prompt-per-clip pipeline and character-consistent reference generation.",
-      tags: ["Veo 3", "Cinematics", "AI Pipeline"],
-      year: "2026"
-    }
-  ];
+  // TODO: add your real projects here. Each entry needs: title, desc,
+  // tags (array), year — use only what you confirm yourself, nothing invented.
+  const WORK = [];
 
   const SKILLS = [
     { group: "3D", items: ["Autodesk Maya", "Blender", "Houdini", "Unreal Engine", "Unity", "Substance Painter", "Gaea", "Embergen", "Marvelous Designer"] },
