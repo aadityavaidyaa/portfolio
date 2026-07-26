@@ -1,217 +1,382 @@
-const site = {
-  role: "product designer",
-  email: "hello@yourname.com",
-  projects: [
-    { title: "Project One", tags: ["Web App", "React", "2025"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null },
-    { title: "Project Two", tags: ["Branding", "Figma", "2024"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null },
-    { title: "Project Three", tags: ["Mobile", "iOS", "2024"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null },
-    { title: "Project Four", tags: ["Case Study", "Research", "2023"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null }
-  ],
-  skills: {
-    "Design": ["Product Design", "Design Systems", "Prototyping", "Typography"],
-    "Development": ["React", "TypeScript", "CSS / Motion", "Accessibility"],
-    "Tools": ["Figma", "Framer", "Git", "Notion"]
-  },
-  socials: [
-    { label: "Email", url: "mailto:hello@yourname.com" },
-    { label: "LinkedIn", url: "https://linkedin.com/in/yourname" },
-    { label: "GitHub", url: "https://github.com/yourname" },
-    { label: "Dribbble / Behance", url: "https://dribbble.com/yourname" }
-  ]
-};
+/* ============================================================
+   AADITYA VAIDYA — PORTFOLIO — behavior
+   ============================================================ */
+(() => {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
-document.getElementById('year').textContent = new Date().getFullYear();
-document.getElementById('yearFooter').textContent = new Date().getFullYear();
-document.getElementById('roleText').textContent = site.role;
-document.getElementById('emailLink').textContent = site.email;
-document.getElementById('emailLink').href = "mailto:" + site.email;
-
-const workList = document.getElementById('workList');
-site.projects.forEach((p, i) => {
-  const item = document.createElement('a');
-  item.className = 'work-item';
-  item.href = p.link;
-  item.target = '_blank';
-  item.rel = 'noopener noreferrer';
-  item.setAttribute('data-hover', '');
-  const num = String(i + 1).padStart(2, '0');
-  item.innerHTML = `
-    <div class="work-index">${num}</div>
-    <div class="work-main">
-      <h3>${p.title} <span class="work-arrow">→</span></h3>
-      <p style="color:var(--ink-dim); margin-top:10px; max-width:440px; font-size:15px;">${p.description}</p>
-      <div class="work-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-    </div>
-    <div class="work-visual">
-      <div class="spotlight"></div>
-      ${p.image ? `<img src="${p.image}" alt="${p.title}">` : `<div class="ph">image goes here</div>`}
-    </div>
-  `;
-  workList.appendChild(item);
-
-  const visual = item.querySelector('.work-visual');
-  visual.addEventListener('mousemove', (e) => {
-    const r = visual.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
-    visual.style.setProperty('--mx', (px * 100) + '%');
-    visual.style.setProperty('--my', (py * 100) + '%');
-    const rotY = (px - 0.5) * 12;
-    const rotX = (0.5 - py) * 12;
-    visual.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.03)`;
-  });
-  visual.addEventListener('mouseleave', () => { visual.style.transform = ''; });
-});
-
-const skillsGrid = document.getElementById('skillsGrid');
-Object.entries(site.skills).forEach(([cat, items]) => {
-  const card = document.createElement('div');
-  card.className = 'skill-card';
-  card.innerHTML = `<h4>${cat}</h4><ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
-  skillsGrid.appendChild(card);
-});
-
-const socialRow = document.getElementById('socialRow');
-site.socials.forEach(s => {
-  const a = document.createElement('a');
-  a.href = s.url;
-  a.textContent = s.label;
-  a.setAttribute('data-hover', '');
-  if (!s.url.startsWith('mailto')) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
-  if (s.url.startsWith('mailto')) a.addEventListener('click', () => copyEmail());
-  socialRow.appendChild(a);
-});
-
-const toast = document.getElementById('toast');
-let toastTimer;
-function showToast(msg){
-  toast.textContent = msg;
-  toast.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-}
-function copyEmail(){
-  navigator.clipboard?.writeText(site.email).then(() => showToast('Email copied — ' + site.email));
-}
-document.getElementById('emailLink').addEventListener('click', () => copyEmail());
-
-const dot = document.getElementById('cursorDot');
-const ring = document.getElementById('cursorRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
-window.addEventListener('mousemove', (e) => {
-  mx = e.clientX; my = e.clientY;
-  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
-});
-function animateRing(){
-  rx += (mx - rx) * 0.18;
-  ry += (my - ry) * 0.18;
-  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-  requestAnimationFrame(animateRing);
-}
-animateRing();
-document.querySelectorAll('[data-hover]').forEach(el => {
-  el.addEventListener('mouseenter', () => ring.classList.add('hover'));
-  el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
-});
-
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const canvas = document.getElementById('trail');
-const ctx = canvas.getContext('2d');
-let cw, ch, dpr;
-
-function sizeCanvas(){
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
-  cw = window.innerWidth; ch = window.innerHeight;
-  canvas.width = cw * dpr; canvas.height = ch * dpr;
-  canvas.style.width = cw + 'px'; canvas.style.height = ch + 'px';
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-sizeCanvas();
-window.addEventListener('resize', sizeCanvas);
-
-if (!reduceMotion && window.matchMedia('(hover:hover)').matches) {
-  const brassRGB = '201,169,97';
-  let points = [];
-  let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
-  let px = tx, py = ty;
-
-  window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; });
-
-  function drawTrail(){
-    ctx.clearRect(0, 0, cw, ch);
-
-    px += (tx - px) * 0.35;
-    py += (ty - py) * 0.35;
-    points.push({ x: px, y: py, life: 1 });
-
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
-    for (let i = 1; i < points.length - 1; i++) {
-      const p0 = points[i - 1], p1 = points[i], p2 = points[i + 1];
-      const alpha = Math.max(p1.life, 0) * 0.5;
-      if (alpha <= 0) continue;
-      const midA = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
-      const midB = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
-      ctx.beginPath();
-      ctx.moveTo(midA.x, midA.y);
-      ctx.quadraticCurveTo(p1.x, p1.y, midB.x, midB.y);
-      ctx.strokeStyle = `rgba(${brassRGB},${alpha})`;
-      ctx.lineWidth = 3.2 * p1.life;
-      ctx.shadowColor = `rgba(${brassRGB},${alpha * 0.8})`;
-      ctx.shadowBlur = 12;
-      ctx.stroke();
+  /* ---------------------------------------------------------- */
+  /* Data — swap the placeholder hrefs (#) for your real links   */
+  /* ---------------------------------------------------------- */
+  const WORK = [
+    {
+      title: "NationRise",
+      desc: "Browser-based grand strategy game — 32 nations, alliance betrayal, espionage, a naval and missile tech tree, all rendered on a zoom/pan map with a cinematic news ticker.",
+      tags: ["React", "Simulation", "Game Systems"],
+      year: "2025"
+    },
+    {
+      title: "Cosmic Byte AR",
+      desc: "Android AR app that detects a physical game controller via a trained OpenCV model and overlays live button labels and stats on top of it.",
+      tags: ["OpenCV", "AR", "Android"],
+      year: "2026"
+    },
+    {
+      title: "Neon Pong",
+      desc: "Cyberpunk canvas game with a 16-opponent career mode, ranked ELO ladder, and real-time online multiplayer over a WebSocket relay.",
+      tags: ["Canvas", "WebSockets", "Game Dev"],
+      year: "2025"
+    },
+    {
+      title: "QT Robot Companion",
+      desc: "A desktop companion app pairing a local LLM with natural-sounding speech synthesis for low-latency, offline-friendly conversation.",
+      tags: ["Python", "LLM", "TTS"],
+      year: "2025"
+    },
+    {
+      title: "Faction Wars Datapack",
+      desc: "A Minecraft datapack turning a survival server into a two-faction political sim — elections, territory capture, economy, and a spy/betrayal system.",
+      tags: ["Minecraft", "Datapack", "Systems Design"],
+      year: "2025"
+    },
+    {
+      title: "Signal Loss",
+      desc: "A sci-fi psychological-thriller short built with an AI-assisted, prompt-per-clip pipeline and character-consistent reference generation.",
+      tags: ["Veo 3", "Cinematics", "AI Pipeline"],
+      year: "2026"
     }
+  ];
 
-    for (let i = points.length - 1; i >= 0; i--) {
-      points[i].life -= 0.024;
-      if (points[i].life <= 0) points.splice(i, 1);
+  const SKILLS = [
+    { group: "3D", items: ["Autodesk Maya", "Blender", "Houdini", "Unreal Engine", "Unity", "Substance Painter", "Gaea", "Embergen", "Marvelous Designer"] },
+    { group: "Adobe", items: ["Photoshop", "Illustrator", "Premiere Pro", "After Effects", "Audition"] },
+    { group: "Programming", items: ["Python", "C#", "MEL Script"] },
+    { group: "Version Control", items: ["Git", "GitHub"] },
+    { group: "AI Tools", items: ["ChatGPT", "Gemini", "Sora", "VEO 3", "Meshy AI", "Rodin", "Tripo AI", "Higgsfield", "ElevenLabs"] }
+  ];
+
+  const SOCIALS = [
+    { label: "LinkedIn", href: "#" },
+    { label: "ArtStation", href: "#" },
+    { label: "Behance", href: "#" },
+    { label: "Instagram", href: "#" },
+    { label: "GitHub", href: "#" }
+  ];
+
+  const ROLES = ["3D Generalist", "Technical Artist", "Game Developer"];
+
+  /* ---------------------------------------------------------- */
+  /* Utility                                                     */
+  /* ---------------------------------------------------------- */
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+  /* ---------------------------------------------------------- */
+  /* Year stamps                                                 */
+  /* ---------------------------------------------------------- */
+  const year = new Date().getFullYear();
+  const yearEl = $("#year");
+  const yearFooterEl = $("#yearFooter");
+  if (yearEl) yearEl.textContent = year;
+  if (yearFooterEl) yearFooterEl.textContent = year;
+
+  /* ---------------------------------------------------------- */
+  /* Nav toggle (mobile)                                         */
+  /* ---------------------------------------------------------- */
+  const navToggle = $("#navToggle");
+  const navLinks = $("#navLinks");
+  if (navToggle && navLinks) {
+    navToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("is-open");
+    });
+    $$("a", navLinks).forEach(a =>
+      a.addEventListener("click", () => navLinks.classList.remove("is-open"))
+    );
+  }
+
+  /* ---------------------------------------------------------- */
+  /* Role text cycle                                             */
+  /* ---------------------------------------------------------- */
+  const roleText = $("#roleText");
+  if (roleText && !reduceMotion) {
+    let i = 0;
+    setInterval(() => {
+      i = (i + 1) % ROLES.length;
+      roleText.classList.add("is-swapping");
+      setTimeout(() => {
+        roleText.textContent = ROLES[i];
+        roleText.classList.remove("is-swapping");
+      }, 300);
+    }, 2600);
+  }
+
+  /* ---------------------------------------------------------- */
+  /* Reveal on scroll                                             */
+  /* ---------------------------------------------------------- */
+  const revealEls = $$(".reveal");
+  if ("IntersectionObserver" in window && revealEls.length) {
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add("is-visible"));
+  }
+
+  /* ---------------------------------------------------------- */
+  /* Scroll progress rail                                        */
+  /* ---------------------------------------------------------- */
+  const progressRail = $("#progressRail");
+  if (progressRail) {
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (scrollTop / max) * 100 : 0;
+      progressRail.style.width = pct + "%";
+    };
+    document.addEventListener("scroll", updateProgress, { passive: true });
+    updateProgress();
+  }
+
+  /* ---------------------------------------------------------- */
+  /* Toast                                                        */
+  /* ---------------------------------------------------------- */
+  const toastEl = $("#toast");
+  let toastTimer;
+  function showToast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add("is-visible");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("is-visible"), 2200);
+  }
+
+  const emailLink = $("#emailLink");
+  if (emailLink) {
+    emailLink.addEventListener("click", e => {
+      if (navigator.clipboard) {
+        e.preventDefault();
+        navigator.clipboard.writeText(emailLink.textContent.trim()).then(() => {
+          showToast("Email copied to clipboard");
+          setTimeout(() => { window.location.href = emailLink.href; }, 250);
+        }).catch(() => { window.location.href = emailLink.href; });
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------- */
+  /* Custom cursor (dot + ring) + trail                          */
+  /* ---------------------------------------------------------- */
+  const cursorDot = $("#cursorDot");
+  const cursorRing = $("#cursorRing");
+  const trailCanvas = $("#trail");
+
+  if (!isTouch && cursorDot && cursorRing) {
+    document.body.classList.add("has-custom-cursor");
+
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let dotX = mouseX, dotY = mouseY;
+    let ringX = mouseX, ringY = mouseY;
+
+    window.addEventListener("mousemove", e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function raf() {
+      dotX += (mouseX - dotX) * 0.55;
+      dotY += (mouseY - dotY) * 0.55;
+      ringX += (mouseX - ringX) * 0.16;
+      ringY += (mouseY - ringY) * 0.16;
+      cursorDot.style.transform = `translate(${dotX}px, ${dotY}px) translate(-50%,-50%)`;
+      cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%,-50%)`;
+      requestAnimationFrame(raf);
     }
-    if (points.length > 140) points.splice(0, points.length - 140);
+    requestAnimationFrame(raf);
 
+    $$("[data-hover]").forEach(el => {
+      el.addEventListener("mouseenter", () => cursorRing.classList.add("is-active"));
+      el.addEventListener("mouseleave", () => cursorRing.classList.remove("is-active"));
+    });
+  }
+
+  if (!isTouch && !reduceMotion && trailCanvas) {
+    const ctx = trailCanvas.getContext("2d");
+    let w, h;
+    function resize() {
+      w = trailCanvas.width = window.innerWidth;
+      h = trailCanvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const particles = [];
+    window.addEventListener("mousemove", e => {
+      particles.push({ x: e.clientX, y: e.clientY, life: 1 });
+      if (particles.length > 40) particles.shift();
+    });
+
+    function drawTrail() {
+      ctx.clearRect(0, 0, w, h);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.4 * p.life, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(162, 71, 42, ${p.life * 0.35})`;
+        ctx.fill();
+        p.life -= 0.035;
+      });
+      for (let i = particles.length - 1; i >= 0; i--) {
+        if (particles[i].life <= 0) particles.splice(i, 1);
+      }
+      requestAnimationFrame(drawTrail);
+    }
     requestAnimationFrame(drawTrail);
   }
-  requestAnimationFrame(drawTrail);
-}
 
-const progressRail = document.getElementById('progressRail');
-window.addEventListener('scroll', () => {
-  const h = document.documentElement;
-  progressRail.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
-});
+  /* ---------------------------------------------------------- */
+  /* Hero wireframe sphere (signature element)                   */
+  /* ---------------------------------------------------------- */
+  const hero = $(".hero");
+  if (hero) {
+    const wrap = document.createElement("div");
+    wrap.className = "hero-sphere";
+    wrap.setAttribute("aria-hidden", "true");
 
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('in'); });
-}, { threshold: 0.15 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    const latCount = 6, lonCount = 7, r = 150, cx = 160, cy = 160;
+    let svg = `<svg viewBox="0 0 320 320">`;
+    for (let i = 1; i < latCount; i++) {
+      const ry = (r * i) / latCount;
+      svg += `<ellipse class="lat" cx="${cx}" cy="${cy}" rx="${r}" ry="${ry}"></ellipse>`;
+    }
+    svg += `<ellipse class="lat" cx="${cx}" cy="${cy}" rx="${r}" ry="${r}"></ellipse>`;
+    for (let i = 0; i < lonCount; i++) {
+      const rx = Math.max(6, Math.abs(r * Math.cos((Math.PI * i) / lonCount)));
+      svg += `<ellipse class="lon" cx="${cx}" cy="${cy}" rx="${rx}" ry="${r}" data-i="${i}"></ellipse>`;
+    }
+    svg += `<circle class="core" cx="${cx}" cy="${cy}" r="2.5"></circle>`;
+    svg += `</svg>`;
+    wrap.innerHTML = svg;
+    hero.appendChild(wrap);
 
-const navToggle = document.getElementById('navToggle');
-const navLinks = document.getElementById('navLinks');
-navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
-navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+    const lons = $$(".lon", wrap);
+    let t = 0;
+    if (!reduceMotion) {
+      function spin() {
+        t += 0.006;
+        lons.forEach((el, i) => {
+          const phase = t + (i * Math.PI) / lonCount;
+          const rx = Math.max(4, Math.abs(r * Math.cos(phase)));
+          el.setAttribute("rx", rx);
+        });
+        requestAnimationFrame(spin);
+      }
+      requestAnimationFrame(spin);
+    }
 
-if (window.matchMedia('(hover:hover)').matches) {
-  document.querySelectorAll('.btn, .nav-cta').forEach(el => {
-    el.addEventListener('mousemove', (e) => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left - r.width / 2) * 0.35;
-      const y = (e.clientY - r.top - r.height / 2) * 0.35;
-      el.style.transform = `translate(${x}px, ${y}px)`;
+    if (!isTouch) {
+      window.addEventListener("mousemove", e => {
+        const px = (e.clientX / window.innerWidth - 0.5) * 14;
+        const py = (e.clientY / window.innerHeight - 0.5) * 14;
+        wrap.style.transform = `translateY(-50%) translate(${px}px, ${py}px)`;
+      });
+    }
+  }
+
+  /* ---------------------------------------------------------- */
+  /* Work list                                                    */
+  /* ---------------------------------------------------------- */
+  const workList = $("#workList");
+  const workAccents = ["#A2472A", "#565F44", "#7E3620", "#4C4739", "#A2472A", "#565F44"];
+  if (workList) {
+    WORK.forEach((item, i) => {
+      const row = document.createElement("div");
+      row.className = "work-row";
+      row.setAttribute("data-hover", "");
+      row.innerHTML = `
+        <div class="work-index">${String(i + 1).padStart(2, "0")}</div>
+        <div class="work-main">
+          <div class="work-title">${item.title}</div>
+          <div class="work-desc">${item.desc}</div>
+        </div>
+        <div class="work-tags">${item.tags.map(t => `<span>${t}</span>`).join("")}</div>
+        <div class="work-year">${item.year}</div>
+      `;
+      row.dataset.accent = workAccents[i % workAccents.length];
+      row.dataset.title = item.title;
+      workList.appendChild(row);
     });
-    el.addEventListener('mouseleave', () => { el.style.transform = ''; });
-  });
-}
+  }
 
-const sectionEls = document.querySelectorAll('main section[id]');
-const navAnchors = document.querySelectorAll('.nav-links a');
-const spy = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
-  });
-}, { rootMargin: '-45% 0px -45% 0px' });
-sectionEls.forEach(s => spy.observe(s));
+  /* cursor-following thumbnail preview over work rows */
+  if (!isTouch && workList) {
+    const preview = document.createElement("div");
+    preview.className = "work-preview";
+    preview.innerHTML = `<span></span>`;
+    document.body.appendChild(preview);
+    const label = $("span", preview);
 
-console.log('%cLooking around, huh?', 'color:#C9A961; font-family:monospace; font-size:13px;');
-console.log('%cFeel free to poke at the code — nothing here is minified.', 'color:#9A9D9F; font-family:monospace; font-size:12px;');
+    let px = 0, py = 0, tx = 0, ty = 0, active = false;
+    window.addEventListener("mousemove", e => {
+      tx = e.clientX; ty = e.clientY;
+    });
+    function movePreview() {
+      px += (tx - px) * 0.2;
+      py += (ty - py - 90) * 0.2;
+      if (active) preview.style.transform = `translate(${px}px, ${py}px) scale(1)`;
+      requestAnimationFrame(movePreview);
+    }
+    requestAnimationFrame(movePreview);
 
+    $$(".work-row", workList).forEach(row => {
+      row.addEventListener("mouseenter", () => {
+        active = true;
+        preview.style.background = `linear-gradient(160deg, ${row.dataset.accent}, #1A1712)`;
+        label.textContent = row.dataset.title;
+        preview.classList.add("is-visible");
+      });
+      row.addEventListener("mouseleave", () => {
+        active = false;
+        preview.classList.remove("is-visible");
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------- */
+  /* Skills grid                                                  */
+  /* ---------------------------------------------------------- */
+  const skillsGrid = $("#skillsGrid");
+  if (skillsGrid) {
+    SKILLS.forEach(group => {
+      const el = document.createElement("div");
+      el.className = "skill-group";
+      el.innerHTML = `
+        <h3>${group.group}</h3>
+        <ul>${group.items.map(s => `<li>${s}</li>`).join("")}</ul>
+      `;
+      skillsGrid.appendChild(el);
+    });
+  }
+
+  /* ---------------------------------------------------------- */
+  /* Social row                                                   */
+  /* ---------------------------------------------------------- */
+  const socialRow = $("#socialRow");
+  if (socialRow) {
+    SOCIALS.forEach(s => {
+      const a = document.createElement("a");
+      a.href = s.href;
+      a.textContent = s.label;
+      a.setAttribute("data-hover", "");
+      if (s.href !== "#") { a.target = "_blank"; a.rel = "noopener noreferrer"; }
+      socialRow.appendChild(a);
+    });
+  }
+})();
