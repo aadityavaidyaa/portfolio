@@ -305,11 +305,12 @@ h2{ font-family:var(--serif); font-weight:400; font-size:clamp(32px,4.2vw,52px);
   background:var(--bg-elev); border:1px solid var(--line-soft);
   transition:transform .15s ease-out; transform-style:preserve-3d;
 }
-.film-poster img{ width:100%; height:100%; object-fit:cover; transform:scale(1.06); transition:transform .6s ease, filter .6s ease; filter:grayscale(60%) brightness(0.85); }
+.film-poster img{ width:100%; height:100%; object-fit:cover; transform:scale(1.06); transition:transform .6s ease, filter .6s ease; filter:grayscale(60%) brightness(0.85); position:relative; z-index:1; }
 .film-card:hover .film-poster img{ transform:scale(1); filter:grayscale(0%) brightness(1); }
 .film-poster .spotlight{
   position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s ease;
   background:radial-gradient(180px circle at var(--mx,50%) var(--my,50%), var(--brass-glow), transparent 70%);
+  z-index:2;
 }
 .film-card:hover .spotlight{ opacity:1; }
 .film-poster .ph{
@@ -320,8 +321,9 @@ h2{ font-family:var(--serif); font-weight:400; font-size:clamp(32px,4.2vw,52px);
 .film-status{
   position:absolute; top:12px; right:12px; font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em;
   text-transform:uppercase; padding:5px 10px; border-radius:2px; background:rgba(15,18,21,0.75);
-  border:1px solid var(--brass-dim); color:var(--brass); backdrop-filter:blur(4px);
+  border:1px solid var(--brass-dim); color:var(--brass); backdrop-filter:blur(4px); z-index:3;
 }
+.film-status.status-upcoming{ border-color:#B23A3A; color:#E2574C; }
 .film-card h3{
   font-family:var(--serif); font-weight:400; font-size:22px; margin-top:18px;
   transition:color .3s ease; display:flex; align-items:center; gap:10px;
@@ -599,7 +601,7 @@ site.films.forEach((f) => {
   item.innerHTML = `
     <div class="film-poster">
       <div class="spotlight"></div>
-      <span class="film-status">${f.status}</span>
+      <span class="film-status${f.status !== 'Released' ? ' status-upcoming' : ''}">${f.status}</span>
       ${f.image ? `<img src="${f.image}" alt="${f.title}">` : `<div class="ph">poster / still goes here</div>`}
     </div>
     <h3>${f.title} <span class="work-arrow">→</span></h3>
