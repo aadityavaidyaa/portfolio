@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Admin</title>
+<style>
+:root{
+  --bg:#0F1215; --bg-alt:#15191D; --bg-elev:#1C2126;
+  --line:#2A3037; --line-soft:#22272C;
+  --ink:#ECE9E2; --ink-dim:#9A9D9F; --ink-faint:#61656A;
+  --brass:#C9A961; --brass-dim:#8A7346; --brass-glow:rgba(201,169,97,0.15);
+  --danger:#E2574C; --danger-dim:#B23A3A; --ok:#7FBF8C;
+  --sans:'Inter',-apple-system,sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+body{ background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.5; padding:0 0 80px; }
+a{ color:inherit; }
+.wrap{ max-width:920px; margin:0 auto; padding:0 24px; }
+header.top{ border-bottom:1px solid var(--line-soft); padding:22px 0; margin-bottom:28px; }
+header.top .wrap{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+h1{ font-size:19px; font-weight:600; }
+.sub{ color:var(--ink-faint); font-size:12.5px; font-family:var(--mono); }
+.pill{ font-family:var(--mono); font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid var(--line); color:var(--ink-dim); }
+.pill.ok{ border-color:var(--ok); color:var(--ok); }
+
+.tabs{ display:flex; gap:6px; margin-bottom:24px; flex-wrap:wrap; border-bottom:1px solid var(--line-soft); }
+.tab-btn{
+  background:none; border:none; color:var(--ink-faint); font-family:var(--mono); font-size:12.5px;
+  text-transform:uppercase; letter-spacing:0.04em; padding:10px 14px; cursor:pointer; border-bottom:2px solid transparent;
+}
+.tab-btn.active{ color:var(--brass); border-bottom-color:var(--brass); }
+.tab-btn:hover{ color:var(--ink); }
+.panel{ display:none; }
+.panel.active{ display:block; }
+
+.card{ background:var(--bg-elev); border:1px solid var(--line-soft); border-radius:6px; padding:20px; margin-bottom:16px; }
+.card h3{ font-size:14px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.field{ margin-bottom:14px; }
+.field label{ display:block; font-family:var(--mono); font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; }
+.field input[type=text], .field input[type=url], .field input[type=email], .field input[type=password], .field textarea, .field select{
+  width:100%; background:var(--bg-alt); border:1px solid var(--line); color:var(--ink); padding:10px 12px;
+  border-radius:4px; font-family:var(--sans); font-size:14px;
+}
+.field textarea{ resize:vertical; min-height:64px; font-family:var(--sans); }
+.field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--brass-dim); }
+.row{ display:flex; gap:12px; flex-wrap:wrap; }
+.row .field{ flex:1; min-width:140px; }
+
+.btn{
+  font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:0.04em;
+  padding:10px 16px; border-radius:4px; border:1px solid var(--brass-dim); color:var(--brass);
+  background:none; cursor:pointer; transition:background .2s ease,color .2s ease; display:inline-flex; align-items:center; gap:6px;
+}
+.btn:hover{ background:var(--brass); color:#12151A; }
+.btn.secondary{ border-color:var(--line); color:var(--ink-dim); }
+.btn.secondary:hover{ background:var(--bg-alt); color:var(--ink); }
+.btn.danger{ border-color:var(--danger-dim); color:var(--danger); }
+.btn.danger:hover{ background:var(--danger); color:#12151A; }
+.btn.small{ padding:6px 11px; font-size:11px; }
+.btn:disabled{ opacity:0.45; cursor:not-allowed; }
+.btn:disabled:hover{ background:none; color:var(--brass); }
+
+.item-list{ display:flex; flex-direction:column; gap:10px; }
+.item-row{ display:flex; gap:10px; align-items:flex-start; background:var(--bg-alt); border:1px solid var(--line-soft); border-radius:4px; padding:12px; }
+.item-row .fields{ flex:1; display:flex; flex-direction:column; gap:8px; }
+.item-row .fields .row{ margin:0; }
+.item-actions{ display:flex; flex-direction:column; gap:6px; }
+
+.thumb-row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.thumb{
+  width:64px; height:64px; border-radius:4px; object-fit:cover; border:1px solid var(--line-soft);
+  background:var(--bg); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:9px; color:var(--ink-faint); text-align:center;
+}
+.upload-btn{ font-family:var(--mono); font-size:11px; color:var(--brass-dim); cursor:pointer; text-decoration:underline; }
+.upload-btn input{ display:none; }
+
+.toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); opacity:0;
+  background:var(--bg-elev); border:1px solid var(--line); color:var(--ink); padding:12px 20px; border-radius:6px;
+  font-family:var(--mono); font-size:12.5px; transition:opacity .25s ease, transform .25s ease; pointer-events:none; z-index:100; max-width:520px; text-align:center;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+.toast.error{ border-color:var(--danger-dim); color:var(--danger); }
+.toast.ok{ border-color:var(--ok); color:var(--ok); }
+
+.connect-screen{ max-width:440px; margin:80px auto; }
+.connect-screen h2{ font-size:20px; margin-bottom:6px; }
+.connect-screen p.hint{ color:var(--ink-faint); font-size:13px; margin-bottom:24px; }
+.connect-screen .card{ margin-bottom:0; }
+.hint{ color:var(--ink-faint); font-size:12px; margin-top:4px; }
+.link{ color:var(--brass); text-decoration:underline; cursor:pointer; font-size:12px; }
+
+.save-bar{
+  position:sticky; bottom:0; background:var(--bg); border-top:1px solid var(--line-soft); padding:14px 0; margin-top:8px;
+  display:flex; justify-content:flex-end; gap:10px;
+}
+.empty-note{ color:var(--ink-faint); font-size:13px; font-family:var(--mono); padding:12px 0; }
+.status-tag{ font-family:var(--mono); font-size:10px; padding:2px 8px; border-radius:10px; border:1px solid var(--brass-dim); color:var(--brass); }
+.status-tag.up{ border-color:var(--danger-dim); color:var(--danger); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<header class="top">
+  <div class="wrap">
+    <div>
+      <h1>Portfolio Admin</h1>
+      <div class="sub" id="repoLabel">not connected</div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <span class="pill" id="connPill">disconnected</span>
+      <button class="btn secondary small" id="disconnectBtn" style="display:none;">Change repo</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- CONNECT SCREEN -->
+  <div id="connectScreen" class="connect-screen">
+    <h2>Connect your repo</h2>
+    <p class="hint">Enter a GitHub personal access token with repo access. It's stored only in this browser.</p>
+    <div class="card">
+      <div class="field">
+        <label>GitHub username / org</label>
+        <input type="text" id="cfgOwner" placeholder="e.g. aadityavaidya">
+      </div>
+      <div class="field">
+        <label>Repository name</label>
+        <input type="text" id="cfgRepo" placeholder="e.g. portfolio">
+      </div>
+      <div class="field">
+        <label>Branch</label>
+        <input type="text" id="cfgBranch" value="main">
+      </div>
+      <div class="field">
+        <label>Personal access token</label>
+        <input type="password" id="cfgToken" placeholder="ghp_...">
+        <div class="hint">Needs "repo" scope (classic token) or Contents read/write (fine-grained token). <span class="link" id="tokenHelpLink">How do I create one?</span></div>
+      </div>
+      <button class="btn" id="connectBtn" style="width:100%; justify-content:center;">Connect</button>
+    </div>
+  </div>
+
+  <!-- MAIN EDITOR (hidden until connected) -->
+  <div id="editorScreen" style="display:none;">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="site">Site</button>
+      <button class="tab-btn" data-tab="projects">Projects</button>
+      <button class="tab-btn" data-tab="films">Films</button>
+      <button class="tab-btn" data-tab="filmpage" id="filmPageTabBtn" style="display:none;">Film Page</button>
+    </div>
+
+    <div id="loadingNote" class="empty-note">Loading site data…</div>
+
+    <!-- SITE TAB -->
+    <div class="panel" id="panel-site">
+      <div class="card">
+        <h3>Hero &amp; header</h3>
+        <div class="field"><label>Your name</label><input type="text" id="siteName"></div>
+        <div class="row">
+          <div class="field"><label>Role</label><input type="text" id="siteRole"></div>
+        </div>
+        <div class="field"><label>Hero tagline (after "I'm a &lt;role&gt;,")</label><textarea id="siteHeroTagline"></textarea></div>
+      </div>
+
+      <div class="card">
+        <h3>About section <button class="btn small" id="addAboutBtn">+ Paragraph</button></h3>
+        <div class="item-list" id="aboutList"></div>
+      </div>
+
+      <div class="card">
+        <h3>Quick facts <button class="btn small" id="addFactBtn">+ Fact</button></h3>
+        <div class="item-list" id="factsList"></div>
+      </div>
+
+      <div class="card">
+        <h3>Skills <button class="btn small" id="addSkillGroupBtn">+ Group</button></h3>
+        <div class="item-list" id="skillsList"></div>
+      </div>
+
+      <div class="card">
+        <h3>Contact &amp; footer</h3>
+        <div class="field"><label>Email</label><input type="email" id="siteEmail"></div>
+        <div class="field"><label>Contact intro line</label><input type="text" id="siteContactBlurb"></div>
+        <div class="field"><label>Footer name</label><input type="text" id="siteFooterName"></div>
+      </div>
+
+      <div class="card">
+        <h3>Social links <button class="btn small" id="addSocialBtn">+ Link</button></h3>
+        <div class="item-list" id="socialsList"></div>
+      </div>
+
+      <div class="save-bar">
+        <button class="btn" id="saveSiteBtn">Save site changes</button>
+      </div>
+    </div>
+
+    <!-- PROJECTS TAB -->
+    <div class="panel" id="panel-projects">
+      <div class="card">
+        <h3>Projects <button class="btn small" id="addProjectBtn">+ Project</button></h3>
+        <div class="item-list" id="projectsList"></div>
+      </div>
+      <div class="save-bar">
+        <button class="btn" id="saveProjectsBtn">Save project changes</button>
+      </div>
+    </div>
+
+    <!-- FILMS TAB -->
+    <div class="panel" id="panel-films">
+      <div class="card">
+        <h3>Short films <button class="btn small" id="addFilmBtn">+ Film</button></h3>
+        <p class="hint" style="margin-bottom:12px;">Adding a film creates its own page automatically. Deleting a film here only removes it from this list — its page file stays in the repo.</p>
+        <div class="item-list" id="filmsList"></div>
+      </div>
+      <div class="save-bar">
+        <button class="btn" id="saveFilmsBtn">Save film list</button>
+      </div>
+    </div>
+
+    <!-- FILM PAGE TAB -->
+    <div class="panel" id="panel-filmpage">
+      <div id="filmPageContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG / GITHUB API
+   ========================================================= */
+const CFG_KEY = 'portfolioAdminConfig';
+function getConfig(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY)); }catch(e){ return null; } }
+function saveConfig(cfg){ localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); }
+function clearConfig(){ localStorage.removeItem(CFG_KEY); }
+
+function apiBase(){ const c = getConfig(); return `https://api.github.com/repos/${c.owner}/${c.repo}`; }
+function authHeaders(){ const c = getConfig(); return { 'Authorization': `token ${c.token}`, 'Accept':'application/vnd.github+json' }; }
+
+async function ghGetFile(path){
+  const c = getConfig();
+  const res = await fetch(`${apiBase()}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(c.branch)}`, { headers: authHeaders() });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Couldn't read ${path} (${res.status}). ${await safeErr(res)}`);
+  return res.json();
+}
+async function safeErr(res){ try{ const j = await res.json(); return j.message || ''; }catch(e){ return ''; } }
+
+function b64ToUtf8(b64){
+  const bin = atob(b64.replace(/\n/g,''));
+  const bytes = new Uint8Array(bin.length);
+  for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+function utf8ToB64(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+
+async function ghGetText(path){
+  const f = await ghGetFile(path);
+  if (!f) return null;
+  return { text: b64ToUtf8(f.content), sha: f.sha };
+}
+
+async function ghPut(path, base64Content, message, sha){
+  const c = getConfig();
+  const body = { message, content: base64Content, branch: c.branch };
+  if (sha) body.sha = sha;
+  const res = await fetch(`${apiBase()}/contents/${encodeURIComponent(path)}`, {
+    method:'PUT', headers: { ...authHeaders(), 'Content-Type':'application/json' }, body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`Couldn't save ${path} (${res.status}). ${await safeErr(res)}`);
+  return res.json();
+}
+async function ghPutText(path, text, message, sha){ return ghPut(path, utf8ToB64(text), message, sha); }
+
+/* =========================================================
+   MARKER-BASED DATA BLOCK HELPERS
+   ========================================================= */
+function extractBetween(text, startMarker, endMarker){
+  const s = text.indexOf(startMarker);
+  const e = text.indexOf(endMarker);
+  if (s === -1 || e === -1) throw new Error(`Missing marker ${startMarker} — this file wasn't set up for the admin panel.`);
+  return { before: text.slice(0, s + startMarker.length), inner: text.slice(s + startMarker.length, e), after: text.slice(e) };
+}
+function parseDataObject(inner, varName){
+  const m = inner.match(new RegExp('const\\s+' + varName + '\\s*=\\s*([\\s\\S]*?);\\s*$'));
+  if (!m) throw new Error(`Couldn't find the ${varName} object.`);
+  return new Function('return (' + m[1] + ')')();
+}
+function buildDataBlock(varName, obj){
+  return `\nconst ${varName} = ${JSON.stringify(obj, null, 2)};\n`;
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function toast(msg, kind){
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show' + (kind ? ' ' + kind : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
+}
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const state = {
+  indexText: null, indexSha: null, site: null,
+  filmPages: {}   // path -> { text, sha, data }
+};
+
+function slugify(str){
+  return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'untitled';
+}
+
+/* =========================================================
+   CONNECT FLOW
+   ========================================================= */
+const connectScreen = document.getElementById('connectScreen');
+const editorScreen = document.getElementById('editorScreen');
+const connPill = document.getElementById('connPill');
+const repoLabel = document.getElementById('repoLabel');
+const disconnectBtn = document.getElementById('disconnectBtn');
+
+document.getElementById('tokenHelpLink').addEventListener('click', () => {
+  window.open('https://github.com/settings/tokens/new?description=Portfolio%20Admin&scopes=repo', '_blank');
+});
+
+document.getElementById('connectBtn').addEventListener('click', async () => {
+  const owner = document.getElementById('cfgOwner').value.trim();
+  const repo = document.getElementById('cfgRepo').value.trim();
+  const branch = document.getElementById('cfgBranch').value.trim() || 'main';
+  const token = document.getElementById('cfgToken').value.trim();
+  if (!owner || !repo || !token){ toast('Fill in owner, repo, and token.', 'error'); return; }
+  saveConfig({ owner, repo, branch, token });
+  await tryConnect();
+});
+
+disconnectBtn.addEventListener('click', () => {
+  clearConfig();
+  editorScreen.style.display = 'none';
+  connectScreen.style.display = 'block';
+  disconnectBtn.style.display = 'none';
+  connPill.textContent = 'disconnected';
+  connPill.className = 'pill';
+  repoLabel.textContent = 'not connected';
+});
+
+async function tryConnect(){
+  const c = getConfig();
+  if (!c) return;
+  document.getElementById('cfgOwner').value = c.owner || '';
+  document.getElementById('cfgRepo').value = c.repo || '';
+  document.getElementById('cfgBranch').value = c.branch || 'main';
+  try {
+    const res = await fetch(`${apiBase()}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error(res.status === 404 ? 'Repo not found — check owner/repo name.' : `Auth failed (${res.status}). Check your token.`);
+    connPill.textContent = 'connected';
+    connPill.className = 'pill ok';
+    repoLabel.textContent = `${c.owner}/${c.repo} @ ${c.branch}`;
+    disconnectBtn.style.display = 'inline-flex';
+    connectScreen.style.display = 'none';
+    editorScreen.style.display = 'block';
+    await loadEverything();
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+}
+
+/* =========================================================
+   TABS
+   ========================================================= */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+function goToTab(name){
+  document.querySelector(`.tab-btn[data-tab="${name}"]`).click();
+}
+
+/* =========================================================
+   LOAD
+   ========================================================= */
+async function loadEverything(){
+  const loadingNote = document.getElementById('loadingNote');
+  loadingNote.style.display = 'block';
+  try {
+    const { text, sha } = await ghGetText('index.html');
+    state.indexText = text;
+    state.indexSha = sha;
+    const parts = extractBetween(text, '/* SITE_DATA_START */', '/* SITE_DATA_END */');
+    state.site = parseDataObject(parts.inner, 'site');
+    renderSiteTab();
+    renderProjectsTab();
+    renderFilmsTab();
+    loadingNote.style.display = 'none';
+  } catch (e) {
+    loadingNote.textContent = e.message;
+    toast(e.message, 'error');
+  }
+}
+
+/* =========================================================
+   IMAGE UPLOAD
+   ========================================================= */
+function makeUploadInput(onDone){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.addEventListener('change', async () => {
+    const file = input.files[0];
+    if (!file) return;
+    toast('Uploading image…');
+    try {
+      const path = await uploadImage(file);
+      toast('Image uploaded.', 'ok');
+      onDone(path);
+    } catch (e) {
+      toast(e.message, 'error');
+    }
+  });
+  return input;
+}
+function uploadImage(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64 = reader.result.split(',')[1];
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `images/${Date.now()}_${safeName}`;
+        await ghPut(path, base64, `Upload image ${safeName}`, null);
+        resolve(path);
+      } catch (e) { reject(e); }
+    };
+    reader.onerror = () => reject(new Error("Couldn't read that image file."));
+    reader.readAsDataURL(file);
+  });
+}
+function thumbEl(imagePath){
+  const el = document.createElement(imagePath ? 'img' : 'div');
+  el.className = 'thumb';
+  if (imagePath) { el.src = imagePath; } else { el.textContent = 'no image'; }
+  return el;
+}
+
+/* =========================================================
+   SITE TAB
+   ========================================================= */
+function bindText(id, obj, key){
+  const el = document.getElementById(id);
+  el.value = obj[key] || '';
+  el.addEventListener('input', () => { obj[key] = el.value; });
+}
+function renderSiteTab(){
+  const s = state.site;
+  bindText('siteName', s, 'name');
+  bindText('siteRole', s, 'role');
+  bindText('siteHeroTagline', s, 'heroTagline');
+  bindText('siteEmail', s, 'email');
+  bindText('siteContactBlurb', s, 'contactBlurb');
+  bindText('siteFooterName', s, 'footerName');
+  renderAboutList();
+  renderFactsList();
+  renderSkillsList();
+  renderSocialsList();
+}
+
+function renderAboutList(){
+  const wrap = document.getElementById('aboutList');
+  wrap.innerHTML = '';
+  if (!state.site.about.length) wrap.innerHTML = '<div class="empty-note">No paragraphs yet.</div>';
+  state.site.about.forEach((text, i) => {
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    const fields = document.createElement('div');
+    fields.className = 'fields';
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.addEventListener('input', () => { state.site.about[i] = ta.value; });
+    fields.appendChild(ta);
+    const actions = document.createElement('div');
+    actions.className = 'item-actions';
+    const del = document.createElement('button');
+    del.className = 'btn danger small'; del.textContent = 'Remove';
+    del.addEventListener('click', () => { state.site.about.splice(i, 1); renderAboutList(); });
+    actions.appendChild(del);
+    row.appendChild(fields); row.appendChild(actions);
+    wrap.appendChild(row);
+  });
+}
+document.getElementById('addAboutBtn').addEventListener('click', () => { state.site.about.push(''); renderAboutList(); });
+
+function renderFactsList(){
+  const wrap = document.getElementById('factsList');
+  wrap.innerHTML = '';
+  if (!state.site.facts.length) wrap.innerHTML = '<div class="empty-note">No facts yet.</div>';
+  state.site.facts.forEach((f, i) => {
+    const row = document.createElement('div'); row.className = 'item-row';
+    const fields = document.createElement('div'); fields.className = 'fields';
+    const rowInner = document.createElement('div'); rowInner.className = 'row';
+    const labelField = document.createElement('div'); labelField.className = 'field';
+    labelField.innerHTML = '<label>Label</label>';
+    const labelInput = document.createElement('input'); labelInput.type = 'text'; labelInput.value = f.label;
+    labelInput.addEventListener('input', () => { f.label = labelInput.value; });
+    labelField.appendChild(labelInput);
+    const valueField = document.createElement('div'); valueField.className = 'field';
+    valueField.innerHTML = '<label>Value</label>';
+    const valueInput = document.createElement('input'); valueInput.type = 'text'; valueInput.value = f.value;
+    valueInput.addEventListener('input', () => { f.value = valueInput.value; });
+    valueField.appendChild(valueInput);
+    rowInner.appendChild(labelField); rowInner.appendChild(valueField);
+    fields.appendChild(rowInner);
+    const actions = document.createElement('div'); actions.className = 'item-actions';
+    const del = document.createElement('button'); del.className = 'btn danger small'; del.textContent = 'Remove';
+    del.addEventListener('click', () => { state.site.facts.splice(i, 1); renderFactsList(); });
+    actions.appendChild(del);
+    row.appendChild(fields); row.appendChild(actions);
+    wrap.appendChild(row);
+  });
+}
+document.getElementById('addFactBtn').addEventListener('click', () => { state.site.facts.push({ label:'', value:'' }); renderFactsList(); });
+
+function renderSkillsList(){
+  const wrap = document.getElementById('skillsList');
+  wrap.innerHTML = '';
+  const cats = Object.keys(state.site.skills);
+  if (!cats.length) wrap.innerHTML = '<div class="empty-note">No skill groups yet.</div>';
+  cats.forEach((cat) => {
+    const row = document.createElement('div'); row.className = 'item-row';
+    const fields = document.createElement('div'); fields.className = 'fields';
+    const rowInner = document.createElement('div'); rowInner.className = 'row';
+    const catField = document.createElement('div'); catField.className = 'field';
+    catField.innerHTML = '<label>Group name</label>';
+    const catInput = document.createElement('input'); catInput.type = 'text'; catInput.value = cat;
+    catInput.addEventListener('change', () => {
+      const newName = catInput.value.trim() || cat;
+      if (newName !== cat && !state.site.skills[newName]) {
+        state.site.skills[newName] = state.site.skills[cat];
+        delete state.site.skills[cat];
+        renderSkillsList();
+      }
+    });
+    catField.appendChild(catInput);
+    const tagsField = document.createElement('div'); tagsField.className = 'field';
+    tagsField.innerHTML = '<label>Skills (comma-separated)</label>';
+    const tagsInput = document.createElement('input'); tagsInput.type = 'text';
+    tagsInput.value = state.site.skills[cat].join(', ');
+    tagsInput.addEventListener('input', () => {
+      state.site.skills[cat] = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+    });
+    tagsField.appendChild(tagsInput);
+    rowInner.appendChild(catField); rowInner.appendChild(tagsField);
+    fields.appendChild(rowInner);
+    const actions = document.createElement('div'); actions.className = 'item-actions';
+    const del = document.createElement('button'); del.className = 'btn danger small'; del.textContent = 'Remove';
+    del.addEventListener('click', () => { delete state.site.skills[cat]; renderSkillsList(); });
+    actions.appendChild(del);
+    row.appendChild(fields); row.appendChild(actions);
+    wrap.appendChild(row);
+  });
+}
+document.getElementById('addSkillGroupBtn').addEventListener('click', () => {
+  let name = 'New Group', n = 1;
+  while (state.site.skills[name]) { n++; name = 'New Group ' + n; }
+  state.site.skills[name] = [];
+  renderSkillsList();
+});
+
+function renderSocialsList(){
+  const wrap = document.getElementById('socialsList');
+  wrap.innerHTML = '';
+  if (!state.site.socials.length) wrap.innerHTML = '<div class="empty-note">No social links yet.</div>';
+  state.site.socials.forEach((s, i) => {
+    const row = document.createElement('div'); row.className = 'item-row';
+    const fields = document.createElement('div'); fields.className = 'fields';
+    const rowInner = document.createElement('div'); rowInner.className = 'row';
+    const labelField = document.createElement('div'); labelField.className = 'field';
+    labelField.innerHTML = '<label>Label</label>';
+    const labelInput = document.createElement('input'); labelInput.type = 'text'; labelInput.value = s.label;
+    labelInput.addEventListener('input', () => { s.label = labelInput.value; });
+    labelField.appendChild(labelInput);
+    const urlField = document.createElement('div'); urlField.className = 'field';
+    urlField.innerHTML = '<label>URL</label>';
+    const urlInput = document.createElement('input'); urlInput.type = 'text'; urlInput.value = s.url;
+    urlInput.addEventListener('input', () => { s.url = urlInput.value; });
+    urlField.appendChild(urlInput);
+    rowInner.appendChild(labelField); rowInner.appendChild(urlField);
+    fields.appendChild(rowInner);
+    const actions = document.createElement('div'); actions.className = 'item-actions';
+    const del = document.createElement('button'); del.className = 'btn danger small'; del.textContent = 'Remove';
+    del.addEventListener('click', () => { state.site.socials.splice(i, 1); renderSocialsList(); });
+    actions.appendChild(del);
+    row.appendChild(fields); row.appendChild(actions);
+    wrap.appendChild(row);
+  });
+}
+document.getElementById('addSocialBtn').addEventListener('click', () => { state.site.socials.push({ label:'', url:'' }); renderSocialsList(); });
+
+document.getElementById('saveSiteBtn').addEventListener('click', () => saveSite());
+async function saveSite(){
+  const btn = document.getElementById('saveSiteBtn');
+  btn.disabled = true; toast('Saving…');
+  try {
+    const parts = extractBetween(state.indexText, '/* SITE_DATA_START */', '/* SITE_DATA_END */');
+    const newText = parts.before + buildDataBlock('site', state.site) + parts.after;
+    const result = await ghPutText('index.html', newText, 'Update site content via admin', state.indexSha);
+    state.indexText = newText;
+    state.indexSha = result.content.sha;
+    toast('Site changes saved and live.', 'ok');
+  } catch (e) { toast(e.message, 'error'); }
+  btn.disabled = false;
+}
+
+/* =========================================================
+   PROJECTS TAB
+   ========================================================= */
+function renderProjectsTab(){
+  const wrap = document.getElementById('projectsList');
+  wrap.innerHTML = '';
+  if (!state.site.projects.length) wrap.innerHTML = '<div class="empty-note">No projects yet.</div>';
+  state.site.projects.forEach((p, i) => {
+    const card = document.createElement('div'); card.className = 'card'; card.style.marginBottom = '10px';
+    const thumbRow = document.createElement('div'); thumbRow.className = 'thumb-row';
+    const thumb = thumbEl(p.image);
+    const uploadLabel = document.createElement('label'); uploadLabel.className = 'upload-btn'; uploadLabel.textContent = p.image ? 'Replace image' : 'Upload image';
+    const input = makeUploadInput((path) => { p.image = path; renderProjectsTab(); });
+    uploadLabel.appendChild(input);
+    thumbRow.appendChild(thumb); thumbRow.appendChild(uploadLabel);
+    if (p.image) {
+      const clear = document.createElement('span'); clear.className = 'upload-btn'; clear.textContent = 'Remove image'; clear.style.marginLeft = '10px';
+      clear.addEventListener('click', () => { p.image = null; renderProjectsTab(); });
+      thumbRow.appendChild(clear);
+    }
+    card.appendChild(thumbRow);
+
+    const rowInner = document.createElement('div'); rowInner.className = 'row';
+    rowInner.appendChild(fieldInput('Title', p.title, v => p.title = v));
+    rowInner.appendChild(fieldInput('Tags (comma-separated)', p.tags.join(', '), v => p.tags = v.split(',').map(t=>t.trim()).filter(Boolean)));
+    card.appendChild(rowInner);
+
+    card.appendChild(fieldTextarea('Description', p.description, v => p.description = v));
+    card.appendChild(fieldInput('Link', p.link, v => p.link = v));
+
+    const del = document.createElement('button'); del.className = 'btn danger small'; del.textContent = 'Delete project'; del.style.marginTop = '6px';
+    del.addEventListener('click', () => { state.site.projects.splice(i, 1); renderProjectsTab(); });
+    card.appendChild(del);
+
+    wrap.appendChild(card);
+  });
+}
+document.getElementById('addProjectBtn').addEventListener('click', () => {
+  state.site.projects.push({ title:'New Project', tags:[], description:'', link:'', image:null });
+  renderProjectsTab();
+});
+document.getElementById('saveProjectsBtn').addEventListener('click', () => saveSite());
+
+function fieldInput(labelText, value, onChange){
+  const f = document.createElement('div'); f.className = 'field';
+  const label = document.createElement('label'); label.textContent = labelText;
+  const input = document.createElement('input'); input.type = 'text'; input.value = value;
+  input.addEventListener('input', () => onChange(input.value));
+  f.appendChild(label); f.appendChild(input);
+  return f;
+}
+function fieldTextarea(labelText, value, onChange){
+  const f = document.createElement('div'); f.className = 'field';
+  const label = document.createElement('label'); label.textContent = labelText;
+  const ta = document.createElement('textarea'); ta.value = value;
+  ta.addEventListener('input', () => onChange(ta.value));
+  f.appendChild(label); f.appendChild(ta);
+  return f;
+}
+function fieldSelect(labelText, value, options, onChange){
+  const f = document.createElement('div'); f.className = 'field';
+  const label = document.createElement('label'); label.textContent = labelText;
+  const sel = document.createElement('select');
+  options.forEach(opt => {
+    const o = document.createElement('option'); o.value = opt; o.textContent = opt;
+    if (opt === value) o.selected = true;
+    sel.appendChild(o);
+  });
+  if (!options.includes(value)) {
+    const o = document.createElement('option'); o.value = value; o.textContent = value + ' (custom)'; o.selected = true;
+    sel.insertBefore(o, sel.firstChild);
+  }
+  sel.addEventListener('change', () => onChange(sel.value));
+  f.appendChild(label); f.appendChild(sel);
+  return f;
+}
+
+/* =========================================================
+   FILMS TAB
+   ========================================================= */
+function renderFilmsTab(){
+  const wrap = document.getElementById('filmsList');
+  wrap.innerHTML = '';
+  if (!state.site.films.length) wrap.innerHTML = '<div class="empty-note">No films yet.</div>';
+  state.site.films.forEach((f, i) => {
+    const card = document.createElement('div'); card.className = 'card'; card.style.marginBottom = '10px';
+    const thumbRow = document.createElement('div'); thumbRow.className = 'thumb-row';
+    const thumb = thumbEl(f.image);
+    const uploadLabel = document.createElement('label'); uploadLabel.className = 'upload-btn'; uploadLabel.textContent = f.image ? 'Replace image' : 'Upload image';
+    const input = makeUploadInput((path) => { f.image = path; renderFilmsTab(); });
+    uploadLabel.appendChild(input);
+    thumbRow.appendChild(thumb); thumbRow.appendChild(uploadLabel);
+    if (f.image) {
+      const clear = document.createElement('span'); clear.className = 'upload-btn'; clear.textContent = 'Remove image'; clear.style.marginLeft = '10px';
+      clear.addEventListener('click', () => { f.image = null; renderFilmsTab(); });
+      thumbRow.appendChild(clear);
+    }
+    card.appendChild(thumbRow);
+
+    const rowInner = document.createElement('div'); rowInner.className = 'row';
+    rowInner.appendChild(fieldInput('Title', f.title, v => f.title = v));
+    rowInner.appendChild(fieldInput('Date', f.date, v => f.date = v));
+    rowInner.appendChild(fieldSelect('Status', f.status, ['Released','Upcoming','In Progress'], v => f.status = v));
+    card.appendChild(rowInner);
+
+    const linkRow = document.createElement('div'); linkRow.className = 'row';
+    linkRow.appendChild(fieldInput('Page file', f.link, v => f.link = v));
+    card.appendChild(linkRow);
+
+    const actionsRow = document.createElement('div'); actionsRow.style.display = 'flex'; actionsRow.style.gap = '8px'; actionsRow.style.marginTop = '6px';
+    const editPageBtn = document.createElement('button'); editPageBtn.className = 'btn small'; editPageBtn.textContent = 'Edit page content →';
+    editPageBtn.addEventListener('click', () => openFilmPage(f.link, f.title));
+    const del = document.createElement('button'); del.className = 'btn danger small'; del.textContent = 'Delete from list';
+    del.addEventListener('click', () => { state.site.films.splice(i, 1); renderFilmsTab(); });
+    actionsRow.appendChild(editPageBtn); actionsRow.appendChild(del);
+    card.appendChild(actionsRow);
+
+    wrap.appendChild(card);
+  });
+}
+document.getElementById('saveFilmsBtn').addEventListener('click', () => saveSite());
+
+document.getElementById('addFilmBtn').addEventListener('click', async () => {
+  const title = prompt('Title of the new short film?');
+  if (!title) return;
+  const slug = slugify(title);
+  const link = slug + '.html';
+  const existing = state.site.films.find(f => f.link === link);
+  if (existing) { toast('A film with that page name already exists.', 'error'); return; }
+  const btn = document.getElementById('addFilmBtn');
+  btn.disabled = true; toast('Creating film page…');
+  try {
+    const already = await ghGetFile(link);
+    if (already) { toast(`${link} already exists in the repo — pick a different title.`, 'error'); btn.disabled = false; return; }
+    const filmData = {
+      title, status: 'Upcoming', date: 'TBD',
+      role: 'EDIT ME — e.g. Director / Animator',
+      format: 'EDIT ME — e.g. Short film, 2D/3D animation',
+      poster: null,
+      synopsis: ['EDIT ME — a short paragraph on the story or concept.', 'EDIT ME — a second paragraph on process, tools, or timeline.'],
+      stills: [null, null, null],
+      credits: [{role:'Direction',value:'EDIT ME'},{role:'Animation',value:'EDIT ME'},{role:'Sound',value:'EDIT ME'},{role:'Runtime',value:'EDIT ME'}]
+    };
+    const html = atob(NEW_FILM_TEMPLATE_B64).replace('__FILM_DATA_JSON__', JSON.stringify(filmData, null, 2));
+    const result = await ghPutText(link, html, `Add short film page: ${title}`, null);
+    state.filmPages[link] = { text: html, sha: result.content.sha, data: filmData };
+    state.site.films.push({ title, date: 'TBD', status: 'Upcoming', link, image: null });
+    renderFilmsTab();
+    toast('Film page created. Don\'t forget to save the film list.', 'ok');
+  } catch (e) { toast(e.message, 'error'); }
+  btn.disabled = false;
+});
+
+/* =========================================================
+   FILM PAGE TAB
+   ========================================================= */
+async function openFilmPage(path, titleHint){
+  const container = document.getElementById('filmPageContent');
+  container.innerHTML = '<div class="empty-note">Loading ' + path + '…</div>';
+  document.getElementById('filmPageTabBtn').style.display = 'inline-flex';
+  goToTab('filmpage');
+  try {
+    let entry = state.filmPages[path];
+    if (!entry) {
+      const loaded = await ghGetText(path);
+      if (!loaded) throw new Error(`Couldn't find ${path} in the repo.`);
+      const parts = extractBetween(loaded.text, '/* FILM_DATA_START */', '/* FILM_DATA_END */');
+      const data = parseDataObject(parts.inner, 'filmData');
+      entry = { text: loaded.text, sha: loaded.sha, data };
+      state.filmPages[path] = entry;
+    }
+    renderFilmPage(path);
+  } catch (e) {
+    container.innerHTML = `<div class="empty-note">${e.message}</div>`;
+    toast(e.message, 'error');
+  }
+}
+
+function renderFilmPage(path){
+  const entry = state.filmPages[path];
+  const d = entry.data;
+  const container = document.getElementById('filmPageContent');
+  container.innerHTML = '';
+
+  const header = document.createElement('div'); header.className = 'card';
+  header.innerHTML = `<h3>Editing: ${d.title} <span class="sub" style="font-weight:400;">(${path})</span></h3>`;
+  const rowInner = document.createElement('div'); rowInner.className = 'row';
+  rowInner.appendChild(fieldInput('Title', d.title, v => d.title = v));
+  rowInner.appendChild(fieldInput('Date', d.date, v => d.date = v));
+  rowInner.appendChild(fieldSelect('Status', d.status, ['Released','Upcoming','In Progress'], v => d.status = v));
+  header.appendChild(rowInner);
+  const rowInner2 = document.createElement('div'); rowInner2.className = 'row';
+  rowInner2.appendChild(fieldInput('Role (e.g. Director)', d.role, v => d.role = v));
+  rowInner2.appendChild(fieldInput('Format', d.format, v => d.format = v));
+  header.appendChild(rowInner2);
+  container.appendChild(header);
+
+  const posterCard = document.createElement('div'); posterCard.className = 'card';
+  posterCard.innerHTML = '<h3>Poster</h3>';
+  const posterRow = document.createElement('div'); posterRow.className = 'thumb-row';
+  const posterThumb = thumbEl(d.poster);
+  const posterUpload = document.createElement('label'); posterUpload.className = 'upload-btn'; posterUpload.textContent = d.poster ? 'Replace poster' : 'Upload poster';
+  const posterInput = makeUploadInput((p) => { d.poster = p; renderFilmPage(path); });
+  posterUpload.appendChild(posterInput);
+  posterRow.appendChild(posterThumb); posterRow.appendChild(posterUpload);
+  if (d.poster) {
+    const clear = document.createElement('span'); clear.className = 'upload-btn'; clear.textContent = 'Remove'; clear.style.marginLeft = '10px';
+    clear.addEventListener('click', () => { d.poster = null; renderFilmPage(path); });
+    posterRow.appendChild(clear);
+  }
+  posterCard.appendChild(posterRow);
+  container.appendChild(posterCard);
+
+  const synCard = document.createElement('div'); synCard.className = 'card';
+  const synHeader = document.createElement('h3'); synHeader.textContent = 'Synopsis';
+  const addSynBtn = document.createElement('button'); addSynBtn.className = 'btn small'; addSynBtn.textContent = '+ Paragraph';
+  addSynBtn.addEventListener('click', () => { d.synopsis.push(''); renderFilmPage(path); });
+  synHeader.appendChild(addSynBtn);
+  synCard.appendChild(synHeader);
+  d.synopsis.forEach((t, i) => {
+    const row = document.createElement('div'); row.className = 'item-row';
+    const fields = document.createElement('div'); fields.className = 'fields';
+    const ta = document.createElement('textarea'); ta.value = t;
+    ta.addEventListener('input', () => { d.synopsis[i] = ta.value; });
+    fields.appendChild(ta);
+    const actions = document.createElement('div'); actions.className = 'item-actions';
+    const del = document.createElement('button'); del.className = 'btn danger small'; del.textContent = 'Remove';
+    del.addEventListener('click', () => { d.synopsis.splice(i, 1); renderFilmPage(path); });
+    actions.appendChild(del);
+    row.appendChild(fields); row.appendChild(actions);
+    synCard.appendChild(row);
+  });
+  container.appendChild(synCard);
+
+  const stillsCard = document.createElement('div'); stillsCard.className = 'card';
+  stillsCard.innerHTML = '<h3>Stills</h3>';
+  while (d.stills.length < 3) d.stills.push(null);
+  const stillsRow = document.createElement('div'); stillsRow.style.display = 'flex'; stillsRow.style.gap = '16px'; stillsRow.style.flexWrap = 'wrap';
+  d.stills.forEach((src, i) => {
+    const col = document.createElement('div');
+    const thumb = thumbEl(src); thumb.style.width = '96px'; thumb.style.height = '72px';
+    col.appendChild(thumb);
+    const uploadLabel = document.createElement('label'); uploadLabel.className = 'upload-btn'; uploadLabel.style.display = 'block'; uploadLabel.style.marginTop = '6px';
+    uploadLabel.textContent = src ? 'Replace' : 'Upload';
+    const input = makeUploadInput((p) => { d.stills[i] = p; renderFilmPage(path); });
+    uploadLabel.appendChild(input);
+    col.appendChild(uploadLabel);
+    if (src) {
+      const clear = document.createElement('span'); clear.className = 'upload-btn'; clear.style.display = 'block'; clear.textContent = 'Remove';
+      clear.addEventListener('click', () => { d.stills[i] = null; renderFilmPage(path); });
+      col.appendChild(clear);
+    }
+    stillsRow.appendChild(col);
+  });
+  stillsCard.appendChild(stillsRow);
+  container.appendChild(stillsCard);
+
+  const creditsCard = document.createElement('div'); creditsCard.className = 'card';
+  const creditsHeader = document.createElement('h3'); creditsHeader.textContent = 'Credits';
+  const addCreditBtn = document.createElement('button'); addCreditBtn.className = 'btn small'; addCreditBtn.textContent = '+ Credit';
+  addCreditBtn.addEventListener('click', () => { d.credits.push({role:'',value:''}); renderFilmPage(path); });
+  creditsHeader.appendChild(addCreditBtn);
+  creditsCard.appendChild(creditsHeader);
+  d.credits.forEach((c, i) => {
+    const row = document.createElement('div'); row.className = 'item-row';
+    const fields = document.createElement('div'); fields.className = 'fields';
+    const rowInner3 = document.createElement('div'); rowInner3.className = 'row';
+    rowInner3.appendChild(fieldInput('Role', c.role, v => c.role = v));
+    rowInner3.appendChild(fieldInput('Value', c.value, v => c.value = v));
+    fields.appendChild(rowInner3);
+    const actions = document.createElement('div'); actions.className = 'item-actions';
+    const del = document.createElement('button'); del.className = 'btn danger small'; del.textContent = 'Remove';
+    del.addEventListener('click', () => { d.credits.splice(i, 1); renderFilmPage(path); });
+    actions.appendChild(del);
+    row.appendChild(fields); row.appendChild(actions);
+    creditsCard.appendChild(row);
+  });
+  container.appendChild(creditsCard);
+
+  const saveBar = document.createElement('div'); saveBar.className = 'save-bar';
+  const backBtn = document.createElement('button'); backBtn.className = 'btn secondary'; backBtn.textContent = '← Back to Films';
+  backBtn.addEventListener('click', () => goToTab('films'));
+  const saveBtn = document.createElement('button'); saveBtn.className = 'btn'; saveBtn.textContent = 'Save this page';
+  saveBtn.addEventListener('click', () => saveFilmPage(path));
+  saveBar.appendChild(backBtn); saveBar.appendChild(saveBtn);
+  container.appendChild(saveBar);
+}
+
+async function saveFilmPage(path){
+  const entry = state.filmPages[path];
+  toast('Saving…');
+  try {
+    const parts = extractBetween(entry.text, '/* FILM_DATA_START */', '/* FILM_DATA_END */');
+    const newText = parts.before + buildDataBlock('filmData', entry.data) + parts.after;
+    const result = await ghPutText(path, newText, `Update film page: ${entry.data.title}`, entry.sha);
+    entry.text = newText;
+    entry.sha = result.content.sha;
+    toast('Film page saved and live.', 'ok');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+/* =========================================================
+   NEW FILM PAGE TEMPLATE (base64-encoded HTML skeleton)
+   ========================================================= */
+const NEW_FILM_TEMPLATE_B64 = "PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KPGhlYWQ+CjxtZXRhIGNoYXJzZXQ9IlVURi04Ij4KPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiPgo8dGl0bGU+U2hvcnQgRmlsbTwvdGl0bGU+CjxsaW5rIHJlbD0icHJlY29ubmVjdCIgaHJlZj0iaHR0cHM6Ly9mb250cy5nb29nbGVhcGlzLmNvbSI+CjxsaW5rIHJlbD0icHJlY29ubmVjdCIgaHJlZj0iaHR0cHM6Ly9mb250cy5nc3RhdGljLmNvbSIgY3Jvc3NvcmlnaW4+CjxsaW5rIGhyZWY9Imh0dHBzOi8vZm9udHMuZ29vZ2xlYXBpcy5jb20vY3NzMj9mYW1pbHk9RnJhdW5jZXM6b3Bzeix3Z2h0QDkuLjE0NCwzMDA7OS4uMTQ0LDQwMDs5Li4xNDQsNTAwOzkuLjE0NCw2MDAmZmFtaWx5PUludGVyOndnaHRANDAwOzUwMDs2MDAmZmFtaWx5PUpldEJyYWlucytNb25vOndnaHRANDAwOzUwMCZkaXNwbGF5PXN3YXAiIHJlbD0ic3R5bGVzaGVldCI+CjxzdHlsZT4KOnJvb3R7CiAgLS1iZzojMEYxMjE1OyAtLWJnLWFsdDojMTUxOTFEOyAtLWJnLWVsZXY6IzFDMjEyNjsKICAtLWxpbmU6IzJBMzAzNzsgLS1saW5lLXNvZnQ6IzIyMjcyQzsKICAtLWluazojRUNFOUUyOyAtLWluay1kaW06IzlBOUQ5RjsgLS1pbmstZmFpbnQ6IzYxNjU2QTsKICAtLWJyYXNzOiNDOUE5NjE7IC0tYnJhc3MtZGltOiM4QTczNDY7IC0tYnJhc3MtZ2xvdzpyZ2JhKDIwMSwxNjksOTcsMC4xNSk7CiAgLS1zZXJpZjonRnJhdW5jZXMnLCBHZW9yZ2lhLCBzZXJpZjsgLS1zYW5zOidJbnRlcicsIC1hcHBsZS1zeXN0ZW0sIHNhbnMtc2VyaWY7IC0tbW9ubzonSmV0QnJhaW5zIE1vbm8nLCBtb25vc3BhY2U7CiAgLS1jb250YWluZXI6OTAwcHg7Cn0KKnsgbWFyZ2luOjA7IHBhZGRpbmc6MDsgYm94LXNpemluZzpib3JkZXItYm94OyB9Cmh0bWx7IHNjcm9sbC1iZWhhdmlvcjpzbW9vdGg7IH0KYm9keXsgYmFja2dyb3VuZDp2YXIoLS1iZyk7IGNvbG9yOnZhcigtLWluayk7IGZvbnQtZmFtaWx5OnZhcigtLXNhbnMpOyBsaW5lLWhlaWdodDoxLjY1OyB9Ci53cmFweyBtYXgtd2lkdGg6dmFyKC0tY29udGFpbmVyKTsgbWFyZ2luOjAgYXV0bzsgcGFkZGluZzowIDQwcHg7IH0KYXsgY29sb3I6aW5oZXJpdDsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IH0KaW1neyBtYXgtd2lkdGg6MTAwJTsgZGlzcGxheTpibG9jazsgfQo6OnNlbGVjdGlvbnsgYmFja2dyb3VuZDp2YXIoLS1icmFzcyk7IGNvbG9yOiMxNDE0MTQ7IH0KCmhlYWRlcnsgcGFkZGluZzoyOHB4IDA7IGJvcmRlci1ib3R0b206MXB4IHNvbGlkIHZhcigtLWxpbmUtc29mdCk7IH0KLmJhY2stbGlua3sKICBmb250LWZhbWlseTp2YXIoLS1tb25vKTsgZm9udC1zaXplOjEyLjVweDsgbGV0dGVyLXNwYWNpbmc6MC4wNmVtOyB0ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7CiAgY29sb3I6dmFyKC0taW5rLWRpbSk7IGRpc3BsYXk6aW5saW5lLWZsZXg7IGFsaWduLWl0ZW1zOmNlbnRlcjsgZ2FwOjEwcHg7IHRyYW5zaXRpb246Y29sb3IgLjNzIGVhc2U7Cn0KLmJhY2stbGluazpob3ZlcnsgY29sb3I6dmFyKC0tYnJhc3MpOyB9CgouZmlsbS1oZXJveyBwYWRkaW5nOjY0cHggMCA0MHB4OyB9Ci5maWxtLXN0YXR1c3sKICBmb250LWZhbWlseTp2YXIoLS1tb25vKTsgZm9udC1zaXplOjExLjVweDsgbGV0dGVyLXNwYWNpbmc6MC4wOGVtOyB0ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7CiAgY29sb3I6dmFyKC0tYnJhc3MpOyBib3JkZXI6MXB4IHNvbGlkIHZhcigtLWJyYXNzLWRpbSk7IGRpc3BsYXk6aW5saW5lLWJsb2NrOyBwYWRkaW5nOjZweCAxNHB4OwogIGJvcmRlci1yYWRpdXM6MnB4OyBtYXJnaW4tYm90dG9tOjIycHg7Cn0KLmZpbG0tc3RhdHVzLnN0YXR1cy11cGNvbWluZ3sgYm9yZGVyLWNvbG9yOiNCMjNBM0E7IGNvbG9yOiNFMjU3NEM7IH0KLmZpbG0taGVybyBoMXsKICBmb250LWZhbWlseTp2YXIoLS1zZXJpZik7IGZvbnQtd2VpZ2h0OjQwMDsgZm9udC1zaXplOmNsYW1wKDM4cHgsNi41dncsNjhweCk7IGxpbmUtaGVpZ2h0OjEuMDI7IGxldHRlci1zcGFjaW5nOi0wLjAxZW07Cn0KLmZpbG0tbWV0YXsKICBkaXNwbGF5OmZsZXg7IGdhcDozNnB4OyBmbGV4LXdyYXA6d3JhcDsgbWFyZ2luLXRvcDozMHB4OyBwYWRkaW5nLXRvcDoyNnB4OyBib3JkZXItdG9wOjFweCBzb2xpZCB2YXIoLS1saW5lLXNvZnQpOwp9Ci5tZXRhLWl0ZW0gLm1ldGEtbGFiZWx7CiAgZm9udC1mYW1pbHk6dmFyKC0tbW9ubyk7IGZvbnQtc2l6ZToxMC41cHg7IGNvbG9yOnZhcigtLWluay1mYWludCk7IHRleHQtdHJhbnNmb3JtOnVwcGVyY2FzZTsgbGV0dGVyLXNwYWNpbmc6MC4wOGVtOyBtYXJnaW4tYm90dG9tOjZweDsKfQoubWV0YS1pdGVtIC5tZXRhLXZhbHVleyBmb250LXNpemU6MTVweDsgY29sb3I6dmFyKC0taW5rKTsgfQoKLnBvc3RlcnsKICBtYXJnaW46NDhweCAwOyBoZWlnaHQ6MzQwcHg7IGJvcmRlci1yYWRpdXM6NHB4OyBvdmVyZmxvdzpoaWRkZW47CiAgYmFja2dyb3VuZDpsaW5lYXItZ3JhZGllbnQoMTM1ZGVnLCB2YXIoLS1iZy1lbGV2KSwgdmFyKC0tYmctYWx0KSk7IGJvcmRlcjoxcHggc29saWQgdmFyKC0tbGluZS1zb2Z0KTsKICBkaXNwbGF5OmZsZXg7IGFsaWduLWl0ZW1zOmNlbnRlcjsganVzdGlmeS1jb250ZW50OmNlbnRlcjsKfQoucG9zdGVyIC5waHsgZm9udC1mYW1pbHk6dmFyKC0tbW9ubyk7IGZvbnQtc2l6ZToxMnB4OyBjb2xvcjp2YXIoLS1pbmstZmFpbnQpOyB0ZXh0LWFsaWduOmNlbnRlcjsgcGFkZGluZzoyNHB4OyB9Ci5wb3N0ZXIgaW1neyB3aWR0aDoxMDAlOyBoZWlnaHQ6MTAwJTsgb2JqZWN0LWZpdDpjb3ZlcjsgfQoKc2VjdGlvbnsgcGFkZGluZzo0NHB4IDA7IGJvcmRlci10b3A6MXB4IHNvbGlkIHZhcigtLWxpbmUtc29mdCk7IH0KLmV5ZWJyb3d7CiAgZm9udC1mYW1pbHk6dmFyKC0tbW9ubyk7IGZvbnQtc2l6ZToxMS41cHg7IGNvbG9yOnZhcigtLWJyYXNzKTsgbGV0dGVyLXNwYWNpbmc6MC4xMmVtOwogIHRleHQtdHJhbnNmb3JtOnVwcGVyY2FzZTsgbWFyZ2luLWJvdHRvbToxNnB4OyBkaXNwbGF5OmJsb2NrOwp9CmgyeyBmb250LWZhbWlseTp2YXIoLS1zZXJpZik7IGZvbnQtd2VpZ2h0OjQwMDsgZm9udC1zaXplOmNsYW1wKDI0cHgsMy40dncsMzRweCk7IG1hcmdpbi1ib3R0b206MThweDsgfQpweyBjb2xvcjp2YXIoLS1pbmstZGltKTsgZm9udC1zaXplOjE2cHg7IG1heC13aWR0aDo2NDBweDsgfQpwICsgcHsgbWFyZ2luLXRvcDoxNHB4OyB9CgouY3JlZGl0cy1saXN0eyBkaXNwbGF5OmdyaWQ7IGdyaWQtdGVtcGxhdGUtY29sdW1uczoxZnIgMWZyOyBnYXA6MThweCA0MHB4OyBtYXJnaW4tdG9wOjhweDsgfQouY3JlZGl0eyBib3JkZXItdG9wOjFweCBzb2xpZCB2YXIoLS1saW5lLXNvZnQpOyBwYWRkaW5nLXRvcDoxNHB4OyB9Ci5jcmVkaXQtcm9sZXsgZm9udC1mYW1pbHk6dmFyKC0tbW9ubyk7IGZvbnQtc2l6ZToxMC41cHg7IGNvbG9yOnZhcigtLWluay1mYWludCk7IHRleHQtdHJhbnNmb3JtOnVwcGVyY2FzZTsgbGV0dGVyLXNwYWNpbmc6MC4wOGVtOyBtYXJnaW4tYm90dG9tOjZweDsgfQouY3JlZGl0LXZhbHVleyBmb250LXNpemU6MTVweDsgY29sb3I6dmFyKC0taW5rKTsgfQoKLmdhbGxlcnl7IGRpc3BsYXk6Z3JpZDsgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOnJlcGVhdCgzLDFmcik7IGdhcDoxNnB4OyBtYXJnaW4tdG9wOjI0cHg7IH0KLmdhbGxlcnkgLnN0aWxsewogIGFzcGVjdC1yYXRpbzo0LzM7IGJvcmRlci1yYWRpdXM6NHB4OyBiYWNrZ3JvdW5kOmxpbmVhci1ncmFkaWVudCgxMzVkZWcsIHZhcigtLWJnLWVsZXYpLCB2YXIoLS1iZy1hbHQpKTsKICBib3JkZXI6MXB4IHNvbGlkIHZhcigtLWxpbmUtc29mdCk7IGRpc3BsYXk6ZmxleDsgYWxpZ24taXRlbXM6Y2VudGVyOyBqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyOwp9Ci5nYWxsZXJ5IC5zdGlsbCBzcGFueyBmb250LWZhbWlseTp2YXIoLS1tb25vKTsgZm9udC1zaXplOjEwLjVweDsgY29sb3I6dmFyKC0taW5rLWZhaW50KTsgfQoKZm9vdGVyeyBwYWRkaW5nOjQwcHggMCA2MHB4OyB9Ci5mb290ZXItYmFja3sKICBmb250LWZhbWlseTp2YXIoLS1tb25vKTsgZm9udC1zaXplOjEyLjVweDsgbGV0dGVyLXNwYWNpbmc6MC4wNWVtOyB0ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7CiAgYm9yZGVyOjFweCBzb2xpZCB2YXIoLS1icmFzcy1kaW0pOyBjb2xvcjp2YXIoLS1icmFzcyk7IHBhZGRpbmc6MTNweCAyNnB4OyBkaXNwbGF5OmlubGluZS1ibG9jazsKICB0cmFuc2l0aW9uOmJhY2tncm91bmQgLjNzIGVhc2UsIGNvbG9yIC4zcyBlYXNlOwp9Ci5mb290ZXItYmFjazpob3ZlcnsgYmFja2dyb3VuZDp2YXIoLS1icmFzcyk7IGNvbG9yOiMxMjE1MUE7IH0KCkBtZWRpYSAobWF4LXdpZHRoOjY0MHB4KXsKICAud3JhcHsgcGFkZGluZzowIDI0cHg7IH0KICAuY3JlZGl0cy1saXN0eyBncmlkLXRlbXBsYXRlLWNvbHVtbnM6MWZyOyB9CiAgLmdhbGxlcnl7IGdyaWQtdGVtcGxhdGUtY29sdW1uczoxZnIgMWZyOyB9CiAgLnBvc3RlcnsgaGVpZ2h0OjI2MHB4OyB9Cn0KPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KCjxoZWFkZXIgY2xhc3M9IndyYXAiPgogIDxhIGhyZWY9ImluZGV4Lmh0bWwjZmlsbXMiIGNsYXNzPSJiYWNrLWxpbmsiPiYjODU5MjsgQmFjayB0byBwb3J0Zm9saW88L2E+CjwvaGVhZGVyPgoKPG1haW4gY2xhc3M9IndyYXAiPgogIDxzZWN0aW9uIGNsYXNzPSJmaWxtLWhlcm8iIHN0eWxlPSJib3JkZXItdG9wOm5vbmU7IHBhZGRpbmctdG9wOjA7Ij4KICAgIDxzcGFuIGNsYXNzPSJmaWxtLXN0YXR1cyIgaWQ9ImZpbG1TdGF0dXMiPjwvc3Bhbj4KICAgIDxoMSBpZD0iZmlsbVRpdGxlIj48L2gxPgogICAgPGRpdiBjbGFzcz0iZmlsbS1tZXRhIj4KICAgICAgPGRpdiBjbGFzcz0ibWV0YS1pdGVtIj4KICAgICAgICA8ZGl2IGNsYXNzPSJtZXRhLWxhYmVsIj5EYXRlPC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0ibWV0YS12YWx1ZSIgaWQ9ImZpbG1EYXRlIj48L2Rpdj4KICAgICAgPC9kaXY+CiAgICAgIDxkaXYgY2xhc3M9Im1ldGEtaXRlbSI+CiAgICAgICAgPGRpdiBjbGFzcz0ibWV0YS1sYWJlbCI+Um9sZTwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9Im1ldGEtdmFsdWUiIGlkPSJmaWxtUm9sZSI+PC9kaXY+CiAgICAgIDwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJtZXRhLWl0ZW0iPgogICAgICAgIDxkaXYgY2xhc3M9Im1ldGEtbGFiZWwiPkZvcm1hdDwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9Im1ldGEtdmFsdWUiIGlkPSJmaWxtRm9ybWF0Ij48L2Rpdj4KICAgICAgPC9kaXY+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9InBvc3RlciIgaWQ9ImZpbG1Qb3N0ZXIiPgogICAgICA8ZGl2IGNsYXNzPSJwaCI+cG9zdGVyIC8ga2V5IGFydCBnb2VzIGhlcmU8L2Rpdj4KICAgIDwvZGl2PgogIDwvc2VjdGlvbj4KCiAgPHNlY3Rpb24+CiAgICA8c3BhbiBjbGFzcz0iZXllYnJvdyI+U3lub3BzaXM8L3NwYW4+CiAgICA8aDI+V2hhdCBpdCdzIGFib3V0PC9oMj4KICAgIDxkaXYgaWQ9ImZpbG1TeW5vcHNpcyI+PC9kaXY+CiAgPC9zZWN0aW9uPgoKICA8c2VjdGlvbj4KICAgIDxzcGFuIGNsYXNzPSJleWVicm93Ij5TdGlsbHM8L3NwYW4+CiAgICA8aDI+RnJhbWVzIGZyb20gdGhlIGZpbG08L2gyPgogICAgPGRpdiBjbGFzcz0iZ2FsbGVyeSIgaWQ9ImZpbG1HYWxsZXJ5Ij48L2Rpdj4KICA8L3NlY3Rpb24+CgogIDxzZWN0aW9uPgogICAgPHNwYW4gY2xhc3M9ImV5ZWJyb3ciPkNyZWRpdHM8L3NwYW4+CiAgICA8aDI+V2hvIHdvcmtlZCBvbiBpdDwvaDI+CiAgICA8ZGl2IGNsYXNzPSJjcmVkaXRzLWxpc3QiIGlkPSJmaWxtQ3JlZGl0cyI+PC9kaXY+CiAgPC9zZWN0aW9uPgoKICA8Zm9vdGVyPgogICAgPGEgaHJlZj0iaW5kZXguaHRtbCNmaWxtcyIgY2xhc3M9ImZvb3Rlci1iYWNrIj4mIzg1OTI7IEJhY2sgdG8gU2hvcnQgRmlsbXM8L2E+CiAgPC9mb290ZXI+CjwvbWFpbj4KCjxzY3JpcHQ+Ci8qIEZJTE1fREFUQV9TVEFSVCAqLwpjb25zdCBmaWxtRGF0YSA9IF9fRklMTV9EQVRBX0pTT05fXzsKLyogRklMTV9EQVRBX0VORCAqLwoKZG9jdW1lbnQudGl0bGUgPSBmaWxtRGF0YS50aXRsZSArICIg4oCUIFNob3J0IEZpbG0iOwpkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnZmlsbVRpdGxlJykudGV4dENvbnRlbnQgPSBmaWxtRGF0YS50aXRsZTsKZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2ZpbG1EYXRlJykudGV4dENvbnRlbnQgPSBmaWxtRGF0YS5kYXRlOwpkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnZmlsbVJvbGUnKS50ZXh0Q29udGVudCA9IGZpbG1EYXRhLnJvbGU7CmRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdmaWxtRm9ybWF0JykudGV4dENvbnRlbnQgPSBmaWxtRGF0YS5mb3JtYXQ7Cgpjb25zdCBzdGF0dXNFbCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdmaWxtU3RhdHVzJyk7CnN0YXR1c0VsLnRleHRDb250ZW50ID0gZmlsbURhdGEuc3RhdHVzOwppZiAoZmlsbURhdGEuc3RhdHVzICE9PSAnUmVsZWFzZWQnKSBzdGF0dXNFbC5jbGFzc0xpc3QuYWRkKCdzdGF0dXMtdXBjb21pbmcnKTsKCmNvbnN0IHBvc3RlckVsID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2ZpbG1Qb3N0ZXInKTsKcG9zdGVyRWwuaW5uZXJIVE1MID0gZmlsbURhdGEucG9zdGVyCiAgPyBgPGltZyBzcmM9IiR7ZmlsbURhdGEucG9zdGVyfSIgYWx0PSIke2ZpbG1EYXRhLnRpdGxlfSI+YAogIDogYDxkaXYgY2xhc3M9InBoIj5wb3N0ZXIgLyBrZXkgYXJ0IGdvZXMgaGVyZTwvZGl2PmA7Cgpjb25zdCBzeW5vcHNpc0VsID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2ZpbG1TeW5vcHNpcycpOwpmaWxtRGF0YS5zeW5vcHNpcy5mb3JFYWNoKHQgPT4gewogIGNvbnN0IHAgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdwJyk7CiAgcC50ZXh0Q29udGVudCA9IHQ7CiAgc3lub3BzaXNFbC5hcHBlbmRDaGlsZChwKTsKfSk7Cgpjb25zdCBnYWxsZXJ5RWwgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnZmlsbUdhbGxlcnknKTsKZmlsbURhdGEuc3RpbGxzLmZvckVhY2goKHNyYywgaSkgPT4gewogIGNvbnN0IGRpdiA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpOwogIGRpdi5jbGFzc05hbWUgPSAnc3RpbGwnOwogIGRpdi5pbm5lckhUTUwgPSBzcmMKICAgID8gYDxpbWcgc3JjPSIke3NyY30iIGFsdD0iU3RpbGwgJHtpICsgMX0iIHN0eWxlPSJ3aWR0aDoxMDAlO2hlaWdodDoxMDAlO29iamVjdC1maXQ6Y292ZXI7Ym9yZGVyLXJhZGl1czo0cHg7Ij5gCiAgICA6IGA8c3Bhbj5zdGlsbCAke1N0cmluZyhpICsgMSkucGFkU3RhcnQoMiwgJzAnKX08L3NwYW4+YDsKICBnYWxsZXJ5RWwuYXBwZW5kQ2hpbGQoZGl2KTsKfSk7Cgpjb25zdCBjcmVkaXRzRWwgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnZmlsbUNyZWRpdHMnKTsKZmlsbURhdGEuY3JlZGl0cy5mb3JFYWNoKGMgPT4gewogIGNvbnN0IGRpdiA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpOwogIGRpdi5jbGFzc05hbWUgPSAnY3JlZGl0JzsKICBkaXYuaW5uZXJIVE1MID0gYDxkaXYgY2xhc3M9ImNyZWRpdC1yb2xlIj48L2Rpdj48ZGl2IGNsYXNzPSJjcmVkaXQtdmFsdWUiPjwvZGl2PmA7CiAgZGl2LnF1ZXJ5U2VsZWN0b3IoJy5jcmVkaXQtcm9sZScpLnRleHRDb250ZW50ID0gYy5yb2xlOwogIGRpdi5xdWVyeVNlbGVjdG9yKCcuY3JlZGl0LXZhbHVlJykudGV4dENvbnRlbnQgPSBjLnZhbHVlOwogIGNyZWRpdHNFbC5hcHBlbmRDaGlsZChkaXYpOwp9KTsKPC9zY3JpcHQ+CgoKPC9ib2R5Pgo8L2h0bWw+Cg==";
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(function init(){
+  const c = getConfig();
+  if (c && c.owner && c.repo && c.token) { tryConnect(); }
+})();
+</script>
+</body>
+</html>

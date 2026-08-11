@@ -396,7 +396,7 @@ footer p{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
 
 <header>
   <nav>
-    <a href="#top" class="logo" data-hover>Aaditya<span>Vaidya</span></a>
+    <a href="#top" class="logo" data-hover>YOUR<span>NAME</span></a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#about" data-hover>About</a></li>
       <li><a href="#work" data-hover>Work</a></li>
@@ -413,9 +413,9 @@ footer p{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
 
   <section class="hero wrap">
     <p class="hero-eyebrow">Portfolio — <span id="year"></span></p>
-    <h1>Aaditya Vaidya,<br><em>portfolio</em></h1>
-    <p class="hero-role">I'm a <strong id="roleText"> 3D Artist</strong>, focused on turning
-      complicated problems into interfaces people enjoy using.</p>
+    <h1><span id="heroNameText">Aaditya Vaidya</span>,<br><em>portfolio</em></h1>
+    <p class="hero-role">I'm a <strong id="roleText"> 3D Artist</strong>, <span id="heroTaglineText">focused on turning
+      complicated problems into interfaces people enjoy using.</span></p>
     <div class="hero-actions">
       <a href="#work" class="btn btn-primary" data-hover>View Work</a>
       <a href="#contact" class="btn btn-ghost" data-hover>Get in Touch</a>
@@ -429,24 +429,8 @@ footer p{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
       <h2>A little about how I work.</h2>
     </div>
     <div class="about-grid">
-      <div class="about-text reveal">
-        <p>I'm <strong>Aaditya Vaidya</strong>, a designer and developer with a few years of experience
-          building products for startups and small teams. I like projects where the constraints are real —
-          tight timelines, limited data, or a team of two.</p>
-        <p>My approach is simple: understand the problem before touching a single pixel or line of code, then
-          move fast once the direction is clear. I care about the details that make something feel considered,
-          not just finished.</p>
-        <p>Outside of work I spend time on <strong>your interest here</strong>, which is usually where
-          my best ideas come from.</p>
-      </div>
-      <div class="facts reveal">
-        <div class="fact"><div class="fact-label">Based in</div><div class="fact-value">Maharashtra, India</div></div>
-        <div class="fact"><div class="fact-label">Experience</div><div class="fact-value">6+ years</div></div>
-        <div class="fact"><div class="fact-label">Focus</div><div class="fact-value">Product design &amp; front-end</div></div>
-        <div class="fact"><div class="fact-label">Availability</div><div class="fact-value">Open to freelance</div></div>
-        <div class="fact"><div class="fact-label">Currently</div><div class="fact-value">A Student</div></div>
-        <div class="fact"><div class="fact-label">Education</div><div class="fact-value">B.Des in Animation, Whistling Woods International</div></div>
-      </div>
+      <div class="about-text reveal" id="aboutText"></div>
+      <div class="facts reveal" id="factsGrid"></div>
     </div>
   </section>
 
@@ -493,12 +477,12 @@ footer p{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
       <span class="eyebrow">05 — Contact</span>
     </div>
     <div class="contact-inner reveal">
-      <p class="contact-big">Have a project in mind? Let's make it real —
+      <p class="contact-big"><span id="contactBlurbText"></span>
         write to <a href="mailto:aadityavaidya.designs@gmail.com" data-hover id="emailLink">aadityavaidya.designs@gmail.com</a></p>
       <div class="social-row" id="socialRow"></div>
     </div>
     <footer>
-      <p>&copy; <span id="yearFooter"></span> Aaditya Vaidya.</p>
+      <p>&copy; <span id="yearFooter"></span> <span id="footerNameText"></span>.</p>
       <a href="#top" class="to-top" data-hover>Back to top ↑</a>
     </footer>
   </section>
@@ -506,9 +490,27 @@ footer p{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
 </main>
 
 <script>
+/* SITE_DATA_START */
 const site = {
+  name: "Aaditya Vaidya",
   role: "3D Artist",
+  heroTagline: "focused on turning complicated problems into interfaces people enjoy using.",
   email: "aadityavaidya.designs@gmail.com",
+  contactBlurb: "Have a project in mind? Let's make it real —",
+  footerName: "Aaditya Vaidya",
+  about: [
+    "I'm Aaditya Vaidya, a designer and developer with a few years of experience building products for startups and small teams. I like projects where the constraints are real — tight timelines, limited data, or a team of two.",
+    "My approach is simple: understand the problem before touching a single pixel or line of code, then move fast once the direction is clear. I care about the details that make something feel considered, not just finished.",
+    "Outside of work I spend time on your interest here, which is usually where my best ideas come from."
+  ],
+  facts: [
+    { label: "Based in", value: "Maharashtra, India" },
+    { label: "Experience", value: "6+ years" },
+    { label: "Focus", value: "Product design & front-end" },
+    { label: "Availability", value: "Open to freelance" },
+    { label: "Currently", value: "A Student" },
+    { label: "Education", value: "B.Des in Animation, Whistling Woods International" }
+  ],
   projects: [
     { title: "Project One", tags: ["Web App", "React", "2025"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null },
     { title: "Project Two", tags: ["Branding", "Figma", "2024"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null },
@@ -518,14 +520,12 @@ const site = {
   films: [
     { title: "Dust to Bloom", date: "2023/2024", status: "Released", link: "dust-to-bloom.html", image: "images/Dust.jpeg" },
     { title: "Shrimp Game", date: "2025", status: "Released", link: "shrimp-game.html", image: "images/Shrimp.jpeg" },
-    { title: "Solus", date: "2026", status: "Released", link: "Solus.html", image: "images/Solus.png" },
-    { title: "Ektara", date: "2026", status: "Upcoming", link: "ektara.html", image: null },
-    { title: "Untitled", date: "2027", status: "Upcoming", link: "untitled.html", image: null }
+    { title: "Ektara", date: "2026", status: "Upcoming", link: "ektara.html", image: null }
   ],
   skills: {
-   "Tools": ["Blender", "Maya", "Houdini", "After Effects", "Premiere Pro", "Substance Painter", "Unreal Engine", "Gaea", "Unity"],
-    "Coding": ["C#", "Javascript", "Python"]
-    
+    "Design": ["Product Design", "Design Systems", "Prototyping", "Typography"],
+    "Development": ["React", "TypeScript", "CSS / Motion", "Accessibility"],
+    "Tools": ["Figma", "Framer", "Git", "Notion"]
   },
   socials: [
     { label: "Email", url: "mailto:aadityavaidya.designs@gmail.com" },
@@ -534,12 +534,34 @@ const site = {
     { label: "Dribbble / Behance", url: "https://dribbble.com/yourname" }
   ]
 };
+/* SITE_DATA_END */
 
 document.getElementById('year').textContent = new Date().getFullYear();
 document.getElementById('yearFooter').textContent = new Date().getFullYear();
 document.getElementById('roleText').textContent = site.role;
 document.getElementById('emailLink').textContent = site.email;
 document.getElementById('emailLink').href = "mailto:" + site.email;
+document.getElementById('heroNameText').textContent = site.name;
+document.getElementById('heroTaglineText').textContent = site.heroTagline;
+document.getElementById('contactBlurbText').textContent = site.contactBlurb;
+document.getElementById('footerNameText').textContent = site.footerName;
+
+const aboutText = document.getElementById('aboutText');
+site.about.forEach(t => {
+  const p = document.createElement('p');
+  p.textContent = t;
+  aboutText.appendChild(p);
+});
+
+const factsGrid = document.getElementById('factsGrid');
+site.facts.forEach(f => {
+  const div = document.createElement('div');
+  div.className = 'fact';
+  div.innerHTML = `<div class="fact-label"></div><div class="fact-value"></div>`;
+  div.querySelector('.fact-label').textContent = f.label;
+  div.querySelector('.fact-value').textContent = f.value;
+  factsGrid.appendChild(div);
+});
 
 const workList = document.getElementById('workList');
 site.projects.forEach((p, i) => {
