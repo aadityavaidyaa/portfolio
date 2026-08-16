@@ -239,70 +239,25 @@ h2{ font-family:var(--serif); font-weight:400; font-size:clamp(32px,4.2vw,52px);
 }
 .work-scroller::-webkit-scrollbar{ display:none; }
 .work-card{
-  flex:0 0 auto; width:360px; scroll-snap-align:center; cursor:default;
+  flex:0 0 auto; width:280px; scroll-snap-align:center; cursor:default;
+  perspective:900px;
 }
-.work-card.is-portrait{ width:230px; }
 .work-card .work-visual{
-  width:100%; aspect-ratio:16/9; border-radius:4px; overflow:hidden; position:relative;
+  height:230px; border-radius:4px; overflow:hidden; position:relative;
   background:var(--bg-elev); border:1px solid var(--line-soft);
+  transition:transform .15s ease-out; transform-style:preserve-3d;
 }
-.work-card.is-portrait .work-visual{ aspect-ratio:9/16; }
-.work-card .work-visual .render-layer{
-  position:absolute; inset:0; width:100%; height:100%;
-  display:flex; align-items:center; justify-content:center;
-  background:var(--bg-elev);
-}
-.work-card .work-visual .render-layer img{ width:100%; height:100%; object-fit:contain; }
+.work-card .work-visual img{ width:100%; height:100%; object-fit:cover; transform:scale(1.06); transition:transform .6s ease, filter .6s ease; filter:grayscale(60%) brightness(0.85); }
+.work-card:hover .work-visual img{ transform:scale(1); filter:grayscale(0%) brightness(1); }
 .work-card .work-visual .spotlight{
   position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s ease;
   background:radial-gradient(180px circle at var(--mx,50%) var(--my,50%), var(--brass-glow), transparent 70%);
-  z-index:5;
 }
 .work-card:hover .spotlight{ opacity:1; }
 .work-card .work-visual .ph{
   width:100%; height:100%; display:flex; align-items:center; justify-content:center;
   font-family:var(--mono); font-size:11px; color:var(--ink-faint); text-align:center; padding:16px;
   background:linear-gradient(135deg, var(--bg-elev), var(--bg-alt));
-}
-.na-bold{ font-family:var(--mono); font-weight:700; font-size:13px; letter-spacing:0.08em; color:var(--ink-faint); }
-.orientation-toggle{
-  position:absolute; top:10px; right:10px; z-index:6;
-  font-family:var(--mono); font-size:10px; letter-spacing:0.05em; text-transform:uppercase;
-  background:rgba(15,18,21,0.72); border:1px solid var(--line); color:var(--ink-dim);
-  padding:6px 9px; border-radius:2px; cursor:pointer; backdrop-filter:blur(4px);
-  opacity:0; transition:opacity .25s ease, border-color .25s ease, color .25s ease;
-}
-.work-card:hover .orientation-toggle{ opacity:1; }
-.orientation-toggle:hover{ border-color:var(--brass-dim); color:var(--brass); }
-.render-slider{ margin-top:12px; }
-.render-slider input[type="range"]{
-  -webkit-appearance:none; appearance:none; width:100%; height:2px; background:var(--line);
-  outline:none; cursor:pointer; margin:0;
-}
-.render-slider input[type="range"]::-webkit-slider-thumb{
-  -webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%;
-  background:var(--brass); border:2px solid var(--bg); box-shadow:0 0 0 1px var(--brass-dim);
-  cursor:pointer;
-}
-.render-slider input[type="range"]::-moz-range-thumb{
-  width:14px; height:14px; border-radius:50%; background:var(--brass); border:2px solid var(--bg);
-  box-shadow:0 0 0 1px var(--brass-dim); cursor:pointer;
-}
-.render-labels{
-  display:flex; justify-content:space-between; margin-top:8px;
-  font-family:var(--mono); font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
-  color:var(--ink-faint);
-}
-.render-labels span{ transition:color .25s ease; }
-.render-labels span.active{ color:var(--brass); }
-.work-gallery{
-  display:flex; gap:8px; margin-top:12px; overflow-x:auto; padding-bottom:2px;
-  scrollbar-width:none; -ms-overflow-style:none;
-}
-.work-gallery::-webkit-scrollbar{ display:none; }
-.work-gallery img{
-  width:56px; height:56px; object-fit:cover; border-radius:3px; border:1px solid var(--line-soft);
-  flex:0 0 auto; pointer-events:none;
 }
 .work-card h3{
   font-family:var(--serif); font-weight:400; font-size:18px; margin-top:14px;
@@ -317,8 +272,10 @@ h2{ font-family:var(--serif); font-weight:400; font-size:clamp(32px,4.2vw,52px);
 .scroller-btn:hover{ border-color:var(--brass); color:var(--brass); background:var(--brass-glow); }
 .scroller-btn:disabled{ opacity:0.35; cursor:default; }
 @media (max-width:900px){
-  .work-card{ width:78vw; }
-  .work-card.is-portrait{ width:52vw; }
+  .work-card{ width:72vw; }
+}
+@media (hover:none){
+  .work-card .work-visual img{ filter:none; transform:none; }
 }
 
 /* ===== Films section: horizontal side-scroller (scoped to #films only, kept separate from #work) ===== */
@@ -428,7 +385,7 @@ footer p{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
 
 <header>
   <nav>
-    <a href="#top" class="logo" data-hover>AADITYA<span> VAIDYA</span></a>
+    <a href="#top" class="logo" data-hover>YOUR<span>NAME</span></a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#about" data-hover>About</a></li>
       <li><a href="#work" data-hover>Work</a></li>
@@ -524,176 +481,46 @@ footer p{ font-family:var(--mono); font-size:12px; color:var(--ink-faint); }
 <script>
 /* SITE_DATA_START */
 const site = {
-  "name": "Aaditya Vaidya",
-  "role": "3D Artist",
-  "heroTagline": "focused on turning complicated problems into interfaces people enjoy using.",
-  "email": "aadityavaidya.designs@gmail.com",
-  "contactBlurb": "Have a project in mind? Let's make it real —",
-  "footerName": "Aaditya Vaidya",
-  "about": [
+  name: "Aaditya Vaidya",
+  role: "3D Artist",
+  heroTagline: "focused on turning complicated problems into interfaces people enjoy using.",
+  email: "aadityavaidya.designs@gmail.com",
+  contactBlurb: "Have a project in mind? Let's make it real —",
+  footerName: "Aaditya Vaidya",
+  about: [
     "I'm Aaditya Vaidya, a designer and developer with a few years of experience building products for startups and small teams. I like projects where the constraints are real — tight timelines, limited data, or a team of two.",
     "My approach is simple: understand the problem before touching a single pixel or line of code, then move fast once the direction is clear. I care about the details that make something feel considered, not just finished.",
     "Outside of work I spend time on your interest here, which is usually where my best ideas come from."
   ],
-  "facts": [
-    {
-      "label": "Based in",
-      "value": "Maharashtra, India"
-    },
-    {
-      "label": "Experience",
-      "value": "6+ years"
-    },
-    {
-      "label": "Focus",
-      "value": "Product design & front-end"
-    },
-    {
-      "label": "Availability",
-      "value": "Open to freelance"
-    },
-    {
-      "label": "Currently",
-      "value": "A Student"
-    },
-    {
-      "label": "Education",
-      "value": "B.Des in Animation, Whistling Woods International"
-    }
+  facts: [
+    { label: "Based in", value: "Maharashtra, India" },
+    { label: "Experience", value: "6+ years" },
+    { label: "Focus", value: "Product design & front-end" },
+    { label: "Availability", value: "Open to freelance" },
+    { label: "Currently", value: "A Student" },
+    { label: "Education", value: "B.Des in Animation, Whistling Woods International" }
   ],
-  "projects": [
-    {
-      "title": "Spell.EXE",
-      "tags": [
-        "Assignment"
-      ],
-      "description": "Short description of the project and your role in it.",
-      "link": "https://example.com",
-      "orientation": "landscape",
-      "renders": {
-        "final": "images/1786885484548_Keyframe_1.png",
-        "clay": null,
-        "viewport": null
-      },
-      "gallery": [
-        "images/1786885535368_Keyframe_2.png",
-        "images/1786885541886_Keyframe_3.png",
-        "images/1786885545805_Keyframe_4_.png",
-        "images/1786885554121_Keyframe_5.png",
-        "images/1786885558894_Keyframe_6.png"
-      ]
-    },
-    {
-      "title": "Project Two",
-      "tags": [
-        "Branding",
-        "Figma",
-        "2024"
-      ],
-      "description": "Short description of the project and your role in it.",
-      "link": "https://example.com",
-      "orientation": "landscape",
-      "renders": { "final": null, "clay": null, "viewport": null },
-      "gallery": []
-    },
-    {
-      "title": "Project Three",
-      "tags": [
-        "Mobile",
-        "iOS",
-        "2024"
-      ],
-      "description": "Short description of the project and your role in it.",
-      "link": "https://example.com",
-      "orientation": "portrait",
-      "renders": { "final": null, "clay": null, "viewport": null },
-      "gallery": []
-    },
-    {
-      "title": "Project Four",
-      "tags": [
-        "Case Study",
-        "Research",
-        "2023"
-      ],
-      "description": "Short description of the project and your role in it.",
-      "link": "https://example.com",
-      "orientation": "landscape",
-      "renders": { "final": null, "clay": null, "viewport": null },
-      "gallery": []
-    }
+  projects: [
+    { title: "Project One", tags: ["Web App", "React", "2025"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null },
+    { title: "Project Two", tags: ["Branding", "Figma", "2024"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null },
+    { title: "Project Three", tags: ["Mobile", "iOS", "2024"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null },
+    { title: "Project Four", tags: ["Case Study", "Research", "2023"], description: "Short description of the project and your role in it.", link: "https://example.com", image: null }
   ],
-  "films": [
-    {
-      "title": "Dust to Bloom",
-      "date": "2023",
-      "status": "Released",
-      "link": "",
-      "image": "images/1786884349362_Dust.jpeg",
-      "watchUrl": "https://youtu.be/6zbdSsiw32Q"
-    },
-    {
-      "title": "Shrimp Game",
-      "date": "2025",
-      "status": "Released",
-      "link": "",
-      "image": "images/1786884402568_Shrimp.jpeg",
-      "watchUrl": "https://youtu.be/8YyXDixEeWI"
-    },
-    {
-      "title": "Solus",
-      "date": "2026",
-      "status": "Released",
-      "link": "",
-      "image": "images/1786884434252_Solus.png",
-      "watchUrl": "https://youtu.be/DU8g-nX8KEM"
-    },
-    {
-      "title": "Ektara",
-      "date": "2026",
-      "status": "In Progress",
-      "link": "",
-      "image": null,
-      "watchUrl": ""
-    }
+  films: [
+    { title: "Dust to Bloom", date: "2023/2024", status: "Released", link: "dust-to-bloom.html", image: "images/Dust.jpeg", watchUrl: "" },
+    { title: "Shrimp Game", date: "2025", status: "Released", link: "shrimp-game.html", image: "images/Shrimp.jpeg", watchUrl: "" },
+    { title: "Ektara", date: "2026", status: "Upcoming", link: "ektara.html", image: null, watchUrl: "" }
   ],
-  "skills": {
-    "Design": [
-      "Product Design",
-      "Design Systems",
-      "Prototyping",
-      "Typography"
-    ],
-    "Development": [
-      "React",
-      "TypeScript",
-      "CSS / Motion",
-      "Accessibility"
-    ],
-    "Tools": [
-      "Figma",
-      "Framer",
-      "Git",
-      "Notion"
-    ]
+  skills: {
+    "Design": ["Product Design", "Design Systems", "Prototyping", "Typography"],
+    "Development": ["React", "TypeScript", "CSS / Motion", "Accessibility"],
+    "Tools": ["Figma", "Framer", "Git", "Notion"]
   },
-  "socials": [
-    {
-      "label": "Email",
-      "url": "mailto:aadityavaidya.designs@gmail.com"
-    },
-    {
-      "label": "LinkedIn",
-      "url": "https://linkedin.com/in/yourname"
-    },
-    {
-      "label": "GitHub",
-      "url": "https://github.com/yourname"
-    },
-    {
-      "label": "Dribbble / Behance",
-      "url": "https://dribbble.com/yourname"
-    }
+  socials: [
+    { label: "Email", url: "mailto:aadityavaidya.designs@gmail.com" },
+    { label: "LinkedIn", url: "https://linkedin.com/in/yourname" },
+    { label: "GitHub", url: "https://github.com/yourname" },
+    { label: "Dribbble / Behance", url: "https://dribbble.com/yourname" }
   ]
 };
 /* SITE_DATA_END */
@@ -726,98 +553,30 @@ site.facts.forEach(f => {
 });
 
 const workList = document.getElementById('workList');
-
-function renderLayerHTML(src, title, stage){
-  return src
-    ? `<div class="render-layer" data-stage="${stage}"><img src="${src}" alt="${title} — ${stage}"></div>`
-    : `<div class="render-layer" data-stage="${stage}"><span class="na-bold">N/A</span></div>`;
-}
-
 site.projects.forEach((p) => {
-  const renders = p.renders || { final: p.image || null, clay: null, viewport: null };
-  const hasAnyRender = !!(renders.final || renders.clay || renders.viewport);
-  const isPortrait = p.orientation === 'portrait';
-
   const item = document.createElement('div');
-  item.className = 'work-card' + (isPortrait ? ' is-portrait' : '');
-
-  const visualInner = hasAnyRender
-    ? `
-      <button class="orientation-toggle" type="button" data-hover>${isPortrait ? '9:16' : '16:9'}</button>
-      <div class="spotlight"></div>
-      ${renderLayerHTML(renders.clay, p.title, 'clay')}
-      ${renderLayerHTML(renders.final, p.title, 'final')}
-      ${renderLayerHTML(renders.viewport, p.title, 'viewport')}
-    `
-    : `
-      <button class="orientation-toggle" type="button" data-hover>${isPortrait ? '9:16' : '16:9'}</button>
-      <div class="spotlight"></div>
-      <div class="ph"><span class="na-bold">N/A</span></div>
-    `;
-
+  item.className = 'work-card';
   item.innerHTML = `
-    <div class="work-visual">${visualInner}</div>
-    ${hasAnyRender ? `
-      <div class="render-slider">
-        <input type="range" min="0" max="100" value="0" step="1" aria-label="Compare final render, clay render, and viewport">
-        <div class="render-labels">
-          <span data-stage="final" class="active">Final Render</span>
-          <span data-stage="clay">Clay Render</span>
-          <span data-stage="viewport">Viewport</span>
-        </div>
-      </div>
-    ` : ''}
-    ${p.gallery && p.gallery.length ? `
-      <div class="work-gallery">
-        ${p.gallery.map(src => `<img src="${src}" alt="${p.title} — extra image">`).join('')}
-      </div>
-    ` : ''}
+    <div class="work-visual">
+      <div class="spotlight"></div>
+      ${p.image ? `<img src="${p.image}" alt="${p.title}">` : `<div class="ph">image goes here</div>`}
+    </div>
     <h3>${p.title}</h3>
   `;
   workList.appendChild(item);
 
   const visual = item.querySelector('.work-visual');
-
-  // Orientation toggle: lets you preview the card as 16:9 (1920x1080) or 9:16 (1080x1920)
-  const orientBtn = item.querySelector('.orientation-toggle');
-  orientBtn.addEventListener('click', () => {
-    const nowPortrait = item.classList.toggle('is-portrait');
-    orientBtn.textContent = nowPortrait ? '9:16' : '16:9';
-  });
-
-  if (hasAnyRender) {
-    const clayLayer = visual.querySelector('.render-layer[data-stage="clay"]');
-    const finalLayer = visual.querySelector('.render-layer[data-stage="final"]');
-    const viewportLayer = visual.querySelector('.render-layer[data-stage="viewport"]');
-    const range = item.querySelector('.render-slider input[type="range"]');
-    const labels = item.querySelectorAll('.render-labels span');
-
-    function updateRenderSlider(val){
-      const finalW = val <= 50 ? (100 - val * 2) : 0;
-      const vpW = val >= 50 ? (val - 50) * 2 : 0;
-      finalLayer.style.clipPath = `inset(0 ${100 - finalW}% 0 0)`;
-      finalLayer.style.zIndex = 2;
-      viewportLayer.style.clipPath = `inset(0 0 0 ${100 - vpW}%)`;
-      viewportLayer.style.zIndex = 3;
-      clayLayer.style.zIndex = 1;
-
-      let activeStage = 'clay';
-      if (val < 33) activeStage = 'final';
-      else if (val > 67) activeStage = 'viewport';
-      labels.forEach(l => l.classList.toggle('active', l.dataset.stage === activeStage));
-    }
-    updateRenderSlider(0);
-    range.addEventListener('input', (e) => updateRenderSlider(Number(e.target.value)));
-  }
-
-  // Subtle glow-follow spotlight only (no color desaturation, no tilt — keeps renders true to original color)
   visual.addEventListener('mousemove', (e) => {
     const r = visual.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width;
     const py = (e.clientY - r.top) / r.height;
     visual.style.setProperty('--mx', (px * 100) + '%');
     visual.style.setProperty('--my', (py * 100) + '%');
+    const rotY = (px - 0.5) * 12;
+    const rotX = (0.5 - py) * 12;
+    visual.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.03)`;
   });
+  visual.addEventListener('mouseleave', () => { visual.style.transform = ''; });
 });
 
 const scrollPrev = document.getElementById('scrollPrev');
@@ -854,7 +613,7 @@ site.films.forEach((f) => {
     <div class="film-poster">
       <div class="spotlight"></div>
       <span class="film-status${f.status !== 'Released' ? ' status-upcoming' : ''}">${f.status}</span>
-      ${f.image ? `<img src="${f.image}" alt="${f.title}">` : `<div class="ph"><span class="na-bold">N/A</span></div>`}
+      ${f.image ? `<img src="${f.image}" alt="${f.title}">` : `<div class="ph">poster / still goes here</div>`}
     </div>
     <h3>${f.title}</h3>
   `;
