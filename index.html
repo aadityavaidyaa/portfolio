@@ -238,6 +238,9 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
   cursor:pointer; isolation:isolate; display:block; width:100%; text-align:left;
 }
 .pcard .frames{ position:absolute; inset:0; transition:transform 1.4s var(--ease), filter .7s var(--ease); }
+.pcard .pvideo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .5s ease; transform:scale(1.035); }
+.pcard.playing .pvideo{ opacity:1; }
+.pcard.has-video .scrub{ display:none; }
 .pcard .frames img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; will-change:opacity; }
 .pcard::after{
   content:''; position:absolute; inset:0; z-index:1; pointer-events:none; transition:background .6s var(--ease);
@@ -1072,6 +1075,7 @@ realProjects.forEach((p, pi) => {
   el.setAttribute('aria-label', 'Open project ' + (p.title || ''));
   el.innerHTML = `
     <div class="frames">${frames.map((f, i) => `<img src="${esc(f)}" alt="" loading="lazy" class="${i ? '' : 'on'}">`).join('')}</div>
+    ${p.video ? `<video class="pvideo" src="${esc(p.video)}" muted loop playsinline preload="none" aria-hidden="true"></video>` : ''}
     <div class="pcard-top mono"><span>${pad(pi + 1)}</span><span class="fc">${frames.length > 1 ? `${pad(1)} / ${pad(frames.length)}` : ''}</span></div>
     <div class="pcard-body">
       <h3 class="pcard-title">${esc(p.title)}</h3>
@@ -1102,7 +1106,19 @@ realProjects.forEach((p, pi) => {
   }
   const go = (v) => { target = Math.max(0, Math.min(n - 1, v)); if (!raf) raf = requestAnimationFrame(loop); };
   let cur = 0;
-  if (n > 1 && canHover){
+  const pv = el.querySelector('.pvideo');
+  if (pv){
+    el.classList.add('has-video');
+    const play = () => { const pr = pv.play(); pr && pr.then(() => el.classList.add('playing')).catch(() => {}); };
+    const stop = () => { el.classList.remove('playing'); pv.pause(); };
+    if (canHover){
+      el.addEventListener('mouseenter', play);
+      el.addEventListener('mouseleave', () => { stop(); setTimeout(() => { if (!el.matches(':hover')) pv.currentTime = 0; }, 400); });
+    } else if (!reduce){
+      new IntersectionObserver(([en]) => { en.intersectionRatio > .6 ? play() : stop(); }, { threshold:[0, .6, 1] }).observe(el);
+    }
+  }
+  if (n > 1 && canHover && !pv){
     el.addEventListener('mousemove', (e) => {
       const b = el.getBoundingClientRect();
       const x = Math.max(0, Math.min(1, (e.clientX - b.left) / b.width));
@@ -1110,7 +1126,7 @@ realProjects.forEach((p, pi) => {
     });
     el.addEventListener('mouseleave', () => { go(0); cur = 0; });
   }
-  if (n > 1 && !canHover && !reduce){
+  if (n > 1 && !canHover && !reduce && !pv){
     setInterval(() => { cur = (cur + 1) % n; if (cur === 0){ pos = 0; target = 0; paint(); } else go(cur); }, 2200);
   }
   el.addEventListener('click', () => openProject(p, cur < framesOf(p).length ? cur : 0));
