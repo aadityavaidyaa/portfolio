@@ -439,7 +439,7 @@ footer a:hover{ color:var(--ink); }
 
 <header id="header">
   <div class="wrap nav">
-    <a href="#top" class="brand" data-hover><span class="brand-mark"></span><span id="brandName">Aaditya Vaidya</span></a>
+    <a href="#top" class="brand" data-hover aria-label="Back to top"><span class="brand-mark"></span></a>
     <ul class="nav-links mono" id="navLinks">
       <li><a href="#about">About</a></li>
       <li><a href="#work">Work</a></li>
@@ -534,7 +534,6 @@ footer a:hover{ color:var(--ink); }
       </div>
       <footer class="mono">
         <span>© <span id="year"></span> <span id="footerName"></span></span>
-        <span>Lighting · Lookdev · Environments</span>
         <a href="#top" data-hover>Back to top ↑</a>
       </footer>
     </div>
@@ -870,7 +869,6 @@ const pad = (n, l = 2) => String(n).padStart(l, '0');
 const nameParts = (site.name || '').trim().split(/\s+/);
 $('#heroFirst').textContent = nameParts[0] || '';
 $('#heroLast').textContent = nameParts.slice(1).join(' ') || '';
-$('#brandName').textContent = site.name;
 $('#roleText').textContent = site.role;
 $('#taglineText').textContent = site.heroTagline;
 $('#contactBlurb').innerHTML = esc(site.contactBlurb).replace(/(light|shot|world)/i, '<em>$1</em>') + '<br>Let’s talk.';
