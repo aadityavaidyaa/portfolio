@@ -256,7 +256,7 @@ section{ position:relative; padding:clamp(90px, 12vw, 170px) 0; }
 .stage{ position:relative; aspect-ratio:16/9; background:#000; overflow:hidden; border-radius:6px; cursor:zoom-in; }
 .stage .layer{ position:absolute; inset:0; opacity:0; transition:opacity .5s ease; }
 .stage .layer.on{ opacity:1; }
-.stage .layer img{ width:100%; height:100%; object-fit:cover; }
+.stage .layer img{ width:100%; height:100%; object-fit:contain; }
 .stage-ui{ position:absolute; left:0; right:0; bottom:0; z-index:3; display:flex; justify-content:space-between; align-items:flex-end; padding:16px 18px; background:linear-gradient(transparent, rgba(0,0,0,.6)); gap:12px; }
 .frame-count{ color:rgba(255,255,255,.75); font-variant-numeric:tabular-nums; }
 .passes{ display:flex; background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.15); border-radius:100px; padding:3px; }
@@ -548,11 +548,34 @@ const site = {
   "footerName": "Aaditya Vaidya",
   "location": "Mumbai, IN",
   "heroFrames": [
-    { "src": "images/web/1786885554121_Keyframe_5.jpg", "caption": "Spell.EXE — Keyframe 05" },
-    { "src": "images/web/1786885541886_Keyframe_3.jpg", "caption": "Spell.EXE — Keyframe 03" },
-    { "src": "images/web/1786444165089_DTB.jpg", "caption": "Dust to Bloom — Still" },
-    { "src": "images/web/1786885535368_Keyframe_2.jpg", "caption": "Spell.EXE — Keyframe 02" },
-    { "src": "images/web/1786885484548_Keyframe_1.jpg", "caption": "Spell.EXE — Keyframe 01" }
+    {
+      "src": "https://cdnb.artstation.com/p/assets/images/images/092/973/581/large/aaditya-vaidya-final4k.webp?1761198671",
+      "caption": "Where Time Stood Still"
+    },
+    {
+      "src": "images/web/1786885554121_Keyframe_5.jpg",
+      "caption": "Spell.EXE — Keyframe 05"
+    },
+    {
+      "src": "https://cdna.artstation.com/p/assets/images/images/091/849/020/large/aaditya-vaidya-final-render-1.webp?1757988568",
+      "caption": "Memories in Focus"
+    },
+    {
+      "src": "images/web/1786885541886_Keyframe_3.jpg",
+      "caption": "Spell.EXE — Keyframe 03"
+    },
+    {
+      "src": "images/web/1786444165089_DTB.jpg",
+      "caption": "Dust to Bloom — Still"
+    },
+    {
+      "src": "images/web/1786885535368_Keyframe_2.jpg",
+      "caption": "Spell.EXE — Keyframe 02"
+    },
+    {
+      "src": "images/web/1786885484548_Keyframe_1.jpg",
+      "caption": "Spell.EXE — Keyframe 01"
+    }
   ],
   "about": [
     "I'm Aaditya, an animation student at Whistling Woods International in Mumbai, working as a 3D generalist with a soft spot for light. Most of my time goes into lighting, lookdev and building environments that feel lived-in.",
@@ -560,16 +583,53 @@ const site = {
     "Away from the DCCs I build browser games and small creative tools in JavaScript and Python. It keeps me curious about how things work under the hood."
   ],
   "facts": [
-    { "label": "Based in", "value": "Maharashtra, India" },
-    { "label": "Focus", "value": "Lighting · Lookdev · Environments" },
-    { "label": "Education", "value": "B.Des Animation, Whistling Woods International" },
-    { "label": "Currently", "value": "Student · Directing 'Ektara'" },
-    { "label": "Availability", "value": "Open to internships & freelance" }
+    {
+      "label": "Based in",
+      "value": "Maharashtra, India"
+    },
+    {
+      "label": "Focus",
+      "value": "Lighting · Lookdev · Environments"
+    },
+    {
+      "label": "Education",
+      "value": "B.Des Animation, Whistling Woods International"
+    },
+    {
+      "label": "Currently",
+      "value": "Student · Directing 'Ektara'"
+    },
+    {
+      "label": "Availability",
+      "value": "Open to internships & freelance"
+    }
   ],
   "projects": [
     {
+      "title": "Where Time Stood Still",
+      "tags": [
+        "Lighting",
+        "Environment",
+        "Blender"
+      ],
+      "description": "A sunlit Japanese classroom frozen in time. Empty desks, a forgotten soccer ball and soft dust in the air tell quiet stories of memories, laughter and moments that have passed.",
+      "link": "https://www.artstation.com/artwork/EzyXVv",
+      "orientation": "landscape",
+      "renders": {
+        "final": "https://cdnb.artstation.com/p/assets/images/images/092/973/581/large/aaditya-vaidya-final4k.webp?1761198671",
+        "clay": "https://cdnb.artstation.com/p/assets/images/images/092/973/585/large/aaditya-vaidya-4kclayrender.webp?1761198685",
+        "viewport": "https://cdnb.artstation.com/p/assets/images/images/092/973/601/large/aaditya-vaidya-viewport.webp?1761198710"
+      },
+      "gallery": []
+    },
+    {
       "title": "Spell.EXE",
-      "tags": [ "Lighting", "Environment", "Keyframes", "Assignment" ],
+      "tags": [
+        "Lighting",
+        "Environment",
+        "Keyframes",
+        "Assignment"
+      ],
       "description": "A cosy café interior, torn open by a giant mech. Six keyframes exploring hard sunlight, volumetric shafts and dust in the air, and how warm practical lights hold a space together once the roof is gone.",
       "link": "",
       "orientation": "landscape",
@@ -587,31 +647,85 @@ const site = {
       ]
     },
     {
-      "title": "Project Two",
-      "tags": [],
-      "description": "",
-      "link": "",
+      "title": "Memories in Focus",
+      "tags": [
+        "Lookdev",
+        "Lighting",
+        "Blender",
+        "Maya"
+      ],
+      "description": "A vintage camera scene: a study in light, mood and storytelling, with a Spider-Man figure. UV unwrapped in Maya, textured and rendered in Blender.",
+      "link": "https://www.artstation.com/artwork/XJXD6R",
       "orientation": "landscape",
-      "renders": { "final": null, "clay": null, "viewport": null },
+      "renders": {
+        "final": "https://cdna.artstation.com/p/assets/images/images/091/849/020/large/aaditya-vaidya-final-render-1.webp?1757988568",
+        "clay": "https://cdna.artstation.com/p/assets/images/images/091/849/030/large/aaditya-vaidya-clay-render-1.webp?1757988591",
+        "viewport": "https://cdnb.artstation.com/p/assets/images/images/091/849/025/large/aaditya-vaidya-viewport-display-1.webp?1757988578"
+      },
       "gallery": []
     },
     {
-      "title": "Project Three",
-      "tags": [],
-      "description": "",
-      "link": "",
-      "orientation": "portrait",
-      "renders": { "final": null, "clay": null, "viewport": null },
-      "gallery": []
+      "title": "Traditional Japanese House",
+      "tags": [
+        "Environment",
+        "Lighting",
+        "Blender"
+      ],
+      "description": "A 3D scene inspired by traditional Japanese architecture and the calm atmosphere of cherry blossom season.",
+      "link": "https://www.artstation.com/artwork/nJqYg6",
+      "orientation": "landscape",
+      "renders": {
+        "final": "https://cdnb.artstation.com/p/assets/images/images/089/744/217/large/aaditya-vaidya-finalpp-1.jpg?1751837547",
+        "clay": "https://cdna.artstation.com/p/assets/images/images/089/744/216/large/aaditya-vaidya-japtestclay-1.jpg?1751837542",
+        "viewport": null
+      },
+      "gallery": [
+        "https://cdna.artstation.com/p/assets/images/images/089/744/210/large/aaditya-vaidya-japtest-1.jpg?1751837527",
+        "https://cdnb.artstation.com/p/assets/images/images/089/744/239/large/aaditya-vaidya-teruterubozu-1.jpg?1751837606"
+      ]
     },
     {
-      "title": "Project Four",
-      "tags": [],
-      "description": "",
-      "link": "",
+      "title": "Isometric Café — Baked & Brewed",
+      "tags": [
+        "Modelling",
+        "Lighting",
+        "Blender"
+      ],
+      "description": "An isometric coffee shop inspired by warm tones and cosy vibes, focusing on the small details from modelling through to rendering.",
+      "link": "https://www.artstation.com/artwork/mAYDGZ",
       "orientation": "landscape",
-      "renders": { "final": null, "clay": null, "viewport": null },
-      "gallery": []
+      "renders": {
+        "final": "https://cdnb.artstation.com/p/assets/images/images/089/743/257/large/aaditya-vaidya-cafetest-1.jpg?1751834418",
+        "clay": null,
+        "viewport": null
+      },
+      "gallery": [
+        "https://cdna.artstation.com/p/assets/images/images/089/743/254/large/aaditya-vaidya-cafetest3-1.jpg?1751834413",
+        "https://cdnb.artstation.com/p/assets/images/images/089/743/253/large/aaditya-vaidya-cafetest2-1.jpg?1751834409"
+      ]
+    },
+    {
+      "title": "Three Robots",
+      "tags": [
+        "Previz",
+        "Keyframes",
+        "Blender",
+        "Photoshop"
+      ],
+      "description": "College previz assignment: keyframe paintings for five shots from the Love, Death + Robots episode “Three Robots”. Scenes assembled in Blender, characters painted in Photoshop.",
+      "link": "https://www.artstation.com/artwork/Nq0Evb",
+      "orientation": "landscape",
+      "renders": {
+        "final": "https://cdnb.artstation.com/p/assets/images/images/091/849/247/large/aaditya-vaidya-shot1-2.webp?1757989520",
+        "clay": null,
+        "viewport": null
+      },
+      "gallery": [
+        "https://cdna.artstation.com/p/assets/images/images/091/849/234/large/aaditya-vaidya-shot2.webp?1757989501",
+        "https://cdna.artstation.com/p/assets/images/images/091/849/240/large/aaditya-vaidya-shot3-1.webp?1757989507",
+        "https://cdna.artstation.com/p/assets/images/images/091/849/244/large/aaditya-vaidya-shot4-1.webp?1757989514",
+        "https://cdna.artstation.com/p/assets/images/images/091/849/250/large/aaditya-vaidya-shot5.webp?1757989527"
+      ]
     }
   ],
   "films": [
@@ -661,16 +775,51 @@ const site = {
     }
   ],
   "skills": {
-    "Lighting & Lookdev": [ "Cinematic lighting", "Volumetrics & atmosphere", "Shading & texturing", "Rendering & compositing" ],
-    "Environments & FX": [ "Set dressing & layout", "Terrain generation", "Smoke & fire simulation", "Real-time environments" ],
-    "Software": [ "Autodesk Maya", "SideFX Houdini", "Blender", "Substance Painter", "Unreal Engine", "Unity", "EmberGen", "Gaea", "Adobe Creative Suite" ]
+    "Lighting & Lookdev": [
+      "Cinematic lighting",
+      "Volumetrics & atmosphere",
+      "Shading & texturing",
+      "Rendering & compositing"
+    ],
+    "Environments & FX": [
+      "Set dressing & layout",
+      "Terrain generation",
+      "Smoke & fire simulation",
+      "Real-time environments"
+    ],
+    "Software": [
+      "Autodesk Maya",
+      "SideFX Houdini",
+      "Blender",
+      "Substance Painter",
+      "Unreal Engine",
+      "Unity",
+      "EmberGen",
+      "Gaea",
+      "Adobe Creative Suite"
+    ]
   },
   "socials": [
-    { "label": "ArtStation", "url": "" },
-    { "label": "LinkedIn", "url": "" },
-    { "label": "Behance", "url": "" },
-    { "label": "Instagram", "url": "" },
-    { "label": "GitHub", "url": "https://github.com/aadityavaidyaa" }
+    {
+      "label": "ArtStation",
+      "url": "https://www.artstation.com/aadityavaidya8"
+    },
+    {
+      "label": "LinkedIn",
+      "url": ""
+    },
+    {
+      "label": "Behance",
+      "url": ""
+    },
+    {
+      "label": "Instagram",
+      "url": ""
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/aadityavaidyaa"
+    }
   ]
 };
 /* SITE_DATA_END */
@@ -770,7 +919,8 @@ const framesOf = (p) => {
   return [r.final || r.clay || r.viewport || p.image, ...(p.gallery || [])].filter(Boolean);
 };
 realProjects.forEach((p, pi) => {
-  const frames = framesOf(p);
+  const rr = p.renders || {};
+  const frames = [...framesOf(p), ...['clay', 'viewport'].map(k => rr[k]).filter(Boolean)];
   const el = document.createElement('button');
   el.className = 'pcard wipe';
   el.setAttribute('aria-label', 'Open project ' + (p.title || ''));
@@ -807,7 +957,7 @@ realProjects.forEach((p, pi) => {
   if (frames.length > 1 && !canHover && !reduce){
     auto = setInterval(() => setFrame((cur + 1) % frames.length), 1600);
   }
-  el.addEventListener('click', () => openProject(p, cur));
+  el.addEventListener('click', () => openProject(p, cur < framesOf(p).length ? cur : 0));
 });
 if (realProjects.length % 2 === 1){
   const soon = document.createElement('div');
