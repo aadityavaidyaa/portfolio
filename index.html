@@ -407,9 +407,9 @@ footer a:hover{ color:var(--ink); }
   <div class="wrap nav">
     <a href="#top" class="brand" data-hover><span class="brand-mark"></span><span id="brandName">Aaditya Vaidya</span></a>
     <ul class="nav-links mono" id="navLinks">
+      <li><a href="#about">About</a></li>
       <li><a href="#work">Work</a></li>
       <li><a href="#films">Films</a></li>
-      <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-right">
@@ -441,8 +441,8 @@ footer a:hover{ color:var(--ink); }
           <p class="hero-role mono" id="roleText"></p>
           <p class="hero-tagline" id="taglineText"></p>
           <div class="hero-actions">
-            <a href="#work" class="btn btn-solid" data-hover>View work <span class="arr">→</span></a>
-            <a href="#films" class="btn btn-line" data-hover>Watch films</a>
+            <a href="#about" class="btn btn-solid" data-hover>Meet me <span class="arr">↓</span></a>
+            <a href="#work" class="btn btn-line" data-hover>View work</a>
           </div>
         </div>
       </div>
@@ -456,10 +456,25 @@ footer a:hover{ color:var(--ink); }
 
   <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
 
-  <section id="work">
+  <section id="about">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-num mono"><b>01</b><span>Selected work</span></div>
+        <div class="sec-num mono"><b>01</b><span>About</span></div>
+        <h2 class="sec-title">Chasing the <em>moment</em><br>a frame feels real.</h2>
+      </div>
+      <div class="about">
+        <div class="spacer"></div>
+        <div class="about-text reveal" id="aboutText"></div>
+        <div class="facts reveal mono" id="facts"></div>
+      </div>
+      <div class="toolkit reveal" id="toolkit"><div class="spacer"></div></div>
+    </div>
+  </section>
+
+  <section id="work" style="background:var(--bg-2)">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-num mono"><b>02</b><span>Selected work</span></div>
         <div>
           <h2 class="sec-title">Light, <em>atmosphere</em><br>&amp; the spaces between.</h2>
           <p class="sec-sub">Keyframes and environments, frame by frame. Use the filmstrip to step through shots, or open any frame full-screen.</p>
@@ -469,31 +484,16 @@ footer a:hover{ color:var(--ink); }
     </div>
   </section>
 
-  <section id="films" style="background:var(--bg-2)">
+  <section id="films">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div class="sec-num mono"><b>02</b><span>Short films</span></div>
+        <div class="sec-num mono"><b>03</b><span>Short films</span></div>
         <div>
           <h2 class="sec-title">Stories, <em>start</em><br>to final render.</h2>
           <p class="sec-sub">Shorts I've directed and animated. Click a poster to watch the film and browse stills.</p>
         </div>
       </div>
       <div class="films" id="filmList"></div>
-    </div>
-  </section>
-
-  <section id="about">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <div class="sec-num mono"><b>03</b><span>About</span></div>
-        <h2 class="sec-title">Chasing the <em>moment</em><br>a frame feels real.</h2>
-      </div>
-      <div class="about">
-        <div class="spacer"></div>
-        <div class="about-text reveal" id="aboutText"></div>
-        <div class="facts reveal mono" id="facts"></div>
-      </div>
-      <div class="toolkit reveal" id="toolkit"><div class="spacer"></div></div>
     </div>
   </section>
 
@@ -970,7 +970,7 @@ const navAs = [...document.querySelectorAll('#navLinks a')];
 const spy = new IntersectionObserver((ents) => ents.forEach(en => {
   if (en.isIntersecting) navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
 }), { rootMargin:'-45% 0px -50% 0px' });
-['work','films','about','contact'].forEach(id => spy.observe(document.getElementById(id)));
+['about','work','films','contact'].forEach(id => spy.observe(document.getElementById(id)));
 
 /* ---------- reveal ---------- */
 const io = new IntersectionObserver((ents) => ents.forEach(en => {
