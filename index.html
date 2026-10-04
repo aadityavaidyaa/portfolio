@@ -316,7 +316,9 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
   position:relative; aspect-ratio:9/16; border-radius:6px; overflow:hidden; background:var(--bg-3);
   transform-style:preserve-3d; transition:transform .5s var(--ease); will-change:transform;
 }
-.poster img{ width:100%; height:100%; object-fit:cover; transform:scale(1.04); transition:transform 1s var(--ease), filter .6s; filter:saturate(.85) brightness(.9); }
+.poster img.pbg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:blur(18px) brightness(.55) !important; transform:scale(1.2) !important; }
+.poster img.pmain{ position:relative; }
+.poster img{ width:100%; height:100%; object-fit:contain; transform:scale(1.04); transition:transform 1s var(--ease), filter .6s; filter:saturate(.85) brightness(.9); }
 .film:hover .poster img{ transform:scale(1); filter:none; }
 .poster .glare{
   position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .4s; mix-blend-mode:soft-light;
@@ -834,7 +836,10 @@ const site = {
         "clay": null,
         "viewport": null
       },
-      "gallery": []
+      "gallery": [],
+      "video": "images/web/bloomfall.mp4",
+      "videoStart": 29,
+      "videoEnd": 45
     },
     {
       "title": "Where Time Stood Still",
@@ -931,7 +936,7 @@ const site = {
       "date": "2023",
       "status": "Released",
       "link": "",
-      "image": "images/web/1786884349362_Dust.jpg",
+      "image": "images/web/poster-dust-to-bloom.jpg",
       "watchUrl": "https://youtu.be/6zbdSsiw32Q",
       "stills": [
         "images/web/1786444165089_DTB.jpg",
@@ -944,7 +949,7 @@ const site = {
       "date": "2025",
       "status": "Released",
       "link": "",
-      "image": "images/web/1786884402568_Shrimp.jpg",
+      "image": "images/web/poster-shrimp-game.jpg",
       "watchUrl": "https://youtu.be/8YyXDixEeWI",
       "stills": [
         "images/web/1786443824775_Shrimp_Game__.jpg",
@@ -957,7 +962,7 @@ const site = {
       "date": "2026",
       "status": "Released",
       "link": "",
-      "image": "images/web/1786884434252_Solus.jpg",
+      "image": "images/web/poster-solus.jpg",
       "watchUrl": "https://youtu.be/DU8g-nX8KEM",
       "stills": []
     },
@@ -966,7 +971,7 @@ const site = {
       "date": "2026",
       "status": "In Progress",
       "link": "",
-      "image": null,
+      "image": "images/web/poster-ektara.jpg",
       "watchUrl": "",
       "stills": []
     }
@@ -1156,11 +1161,13 @@ realProjects.forEach((p, pi) => {
   const pv = el.querySelector('.pvideo');
   if (pv){
     el.classList.add('has-video');
-    const play = () => { const pr = pv.play(); pr && pr.then(() => el.classList.add('playing')).catch(() => {}); };
+    const vs = +p.videoStart || 0, ve = +p.videoEnd || 0;
+    if (vs || ve) pv.addEventListener('timeupdate', () => { if ((ve && pv.currentTime >= ve) || pv.currentTime < vs - .5) pv.currentTime = vs; });
+    const play = () => { if (vs && pv.currentTime < vs) { try { pv.currentTime = vs; } catch(e){} } const pr = pv.play(); pr && pr.then(() => el.classList.add('playing')).catch(() => {}); };
     const stop = () => { el.classList.remove('playing'); pv.pause(); };
     if (canHover){
       el.addEventListener('mouseenter', play);
-      el.addEventListener('mouseleave', () => { stop(); setTimeout(() => { if (!el.matches(':hover')) pv.currentTime = 0; }, 400); });
+      el.addEventListener('mouseleave', () => { stop(); setTimeout(() => { if (!el.matches(':hover')) pv.currentTime = vs; }, 400); });
     } else if (!reduce){
       new IntersectionObserver(([en]) => { en.intersectionRatio > .6 ? play() : stop(); }, { threshold:[0, .6, 1] }).observe(el);
     }
@@ -1351,7 +1358,7 @@ const filmList = $('#filmList');
   el.innerHTML = `
     <div class="poster">
       <span class="status mono${released ? '' : ' wip'}">${esc(released ? 'Released' : (f.status || 'In progress'))}</span>
-      ${f.image ? `<img src="${esc(f.image)}" alt="${esc(f.title)} poster" loading="lazy">` : `<div class="poster-ph"><span class="t">${esc(f.title)}</span><span class="s mono">In production · ${esc(f.date || '')}</span></div>`}
+      ${f.image ? `<img class="pbg" src="${esc(f.image)}" alt="" aria-hidden="true" loading="lazy"><img class="pmain" src="${esc(f.image)}" alt="${esc(f.title)} poster" loading="lazy">` : `<div class="poster-ph"><span class="t">${esc(f.title)}</span><span class="s mono">In production · ${esc(f.date || '')}</span></div>`}
       <div class="glare"></div>
       ${released && target ? '<span class="play"></span>' : ''}
     </div>
