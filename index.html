@@ -224,7 +224,8 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
 .work-row.dragging{ scroll-snap-type:none; cursor:grabbing; }
 .work-row.dragging .pcard{ pointer-events:none; }
 .work-row > .pcard{ flex:0 0 min(46vw, 680px); scroll-snap-align:start; }
-.work-row::after{ content:''; flex:0 0 1px; }
+.work-row{ scroll-padding-right:var(--pad); }
+.work-row > .pcard:last-child{ scroll-snap-align:end; }
 @media (max-width:760px){ .work-row > .pcard{ flex-basis:84vw; } }
 .work-ctrl{ display:flex; align-items:center; gap:20px; margin-top:26px; }
 .work-track{ flex:1; height:1px; background:var(--line-2); position:relative; overflow:hidden; }
@@ -903,36 +904,6 @@ const site = {
       "gallery": [
         "https://cdna.artstation.com/p/assets/images/images/089/744/210/large/aaditya-vaidya-japtest-1.jpg?1751837527"
       ]
-    },
-    {
-      "title": "Dusk Circuit",
-      "tags": [
-        "Game",
-        "JavaScript",
-        "three.js",
-        "Multiplayer"
-      ],
-      "description": "A browser-based multiplayer arcade racer I designed and built: a three.js client and a Node.js WebSocket server, with Mario Kart-style drifting and mini-turbos, power-ups, AI bots, tournaments and touch controls on phones. Ten maps, from the coastal dusk loop and the torii gates of Sakura Pass to Mumbai Monsoon, Monaco, Frostpeak Pass, a road above the clouds, a Roman colosseum, and hide-and-seek in a giant toy room and kitchen.",
-      "link": "",
-      "orientation": "landscape",
-      "renders": {
-        "final": "images/web/dc-dusk-circuit.jpg",
-        "clay": null,
-        "viewport": null
-      },
-      "gallery": [
-        "images/web/dc-dusk-circuit-aerial.jpg",
-        "images/web/dc-sakura-pass.jpg",
-        "images/web/dc-sakura-pass-aerial.jpg",
-        "images/web/dc-mumbai-monsoon.jpg",
-        "images/web/dc-monaco.jpg",
-        "images/web/dc-frostpeak-pass.jpg",
-        "images/web/dc-ethereal.jpg",
-        "images/web/dc-colosseum.jpg",
-        "images/web/dc-toy-room.jpg",
-        "images/web/dc-giant-kitchen.jpg",
-        "images/web/dc-junkyard-pit.jpg"
-      ]
     }
   ],
   "films": [
@@ -1206,11 +1177,13 @@ realProjects.forEach((p, pi) => {
     const first = Math.min(n, Math.round(row.scrollLeft / stepW()) + 1);
     cnt.textContent = `${pad(first)} / ${pad(n)}`;
     prev.disabled = row.scrollLeft < 4;
-    next.disabled = row.scrollLeft > max - 4;
+    const cs = cards(), last = cs[cs.length - 1];
+    next.disabled = !last || row.scrollLeft >= max - 4 || last.getBoundingClientRect().right <= row.getBoundingClientRect().right - parseFloat(getComputedStyle(row).paddingRight) + 4;
     document.querySelector('.work-ctrl').style.display = max > 4 ? '' : 'none';
   }
-  prev.onclick = () => row.scrollBy({ left: -stepW(), behavior: 'smooth' });
-  next.onclick = () => row.scrollBy({ left: stepW(), behavior: 'smooth' });
+  const leftOf = (c) => c.offsetLeft - cards()[0].offsetLeft;
+  next.onclick = () => { const cs = cards(), h = cs[0].offsetWidth / 2; const i = cs.findIndex(c => leftOf(c) > row.scrollLeft + h); if (i < 0) return; const max = row.scrollWidth - row.clientWidth; let t = leftOf(cs[i]); if (max - t < h) t = max; row.scrollTo({ left: Math.min(max, t), behavior: 'smooth' }); };
+  prev.onclick = () => { const cs = cards(), h = cs[0].offsetWidth / 2; let i = -1; for (let k = cs.length - 1; k >= 0; k--){ if (leftOf(cs[k]) < row.scrollLeft - h){ i = k; break; } } row.scrollTo({ left: i < 0 ? 0 : leftOf(cs[i]), behavior: 'smooth' }); };
   row.addEventListener('scroll', update, { passive:true });
   addEventListener('resize', update);
   // drag with mouse
