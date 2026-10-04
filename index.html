@@ -337,6 +337,8 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
   position:absolute; top:12px; left:12px; z-index:2; padding:5px 10px; border-radius:100px;
   background:rgba(0,0,0,.55); backdrop-filter:blur(6px); color:rgba(255,255,255,.85); display:flex; align-items:center; gap:7px;
 }
+.award{ position:absolute; top:12px; right:12px; z-index:2; padding:5px 10px; border-radius:100px; background:var(--accent); color:#111; font-weight:500; box-shadow:0 4px 16px rgba(0,0,0,.35); }
+@media (max-width:520px){ .award{ top:auto; bottom:10px; right:10px; } }
 .status::before{ content:''; width:6px; height:6px; border-radius:50%; background:#4ADE80; }
 .status.wip::before{ background:var(--accent); animation:blink 1.4s steps(2) infinite; }
 .poster-ph{
@@ -965,7 +967,8 @@ const site = {
       "link": "",
       "image": "images/web/poster-solus.jpg",
       "watchUrl": "https://youtu.be/DU8g-nX8KEM",
-      "stills": []
+      "stills": [],
+      "award": "Hackathon Winner"
     },
     {
       "title": "Ektara",
@@ -1360,6 +1363,7 @@ const filmList = $('#filmList');
   el.innerHTML = `
     <div class="poster">
       <span class="status mono${released ? '' : ' wip'}">${esc(released ? 'Released' : (f.status || 'In progress'))}</span>
+      ${f.award ? `<span class="award mono">★ ${esc(f.award)}</span>` : ''}
       ${f.image ? `<img class="pbg" src="${esc(f.image)}" alt="" aria-hidden="true" loading="lazy"><img class="pmain" src="${esc(f.image)}" alt="${esc(f.title)} poster" loading="lazy">` : `<div class="poster-ph"><span class="t">${esc(f.title)}</span><span class="s mono">In production · ${esc(f.date || '')}</span></div>`}
       <div class="glare"></div>
       ${released && target ? '<span class="play"></span>' : ''}
