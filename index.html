@@ -433,6 +433,47 @@ footer a:hover{ color:var(--ink); }
 }
 .toast.show{ opacity:1; transform:translate(-50%,0); }
 
+
+/* ===== Mobile: lighter, shorter layout (desktop unchanged) ===== */
+@media (max-width:760px){
+  .grain{ display:none; }
+  section{ padding:56px 0; }
+  #about{ padding-top:8px; }
+  .sec-title{ font-size:clamp(34px, 10vw, 44px); }
+  .sec-head{ margin-bottom:24px; }
+  .hero h1{ font-size:clamp(54px, 16vw, 76px); }
+  .hero-tagline{ font-size:15px; }
+  .hero-actions{ margin-top:18px; }
+  .btn{ padding:12px 18px; }
+  /* about: one paragraph, compact facts, software chips only */
+  .about{ gap:28px; }
+  .about-text p{ font-size:17px; margin-bottom:0; }
+  .about-text p:nth-child(n+2){ display:none; }
+  .fact{ padding:11px 0; font-size:10.5px; }
+  .chips-wrap h4{ margin:24px 0 10px; }
+  .chip{ font-size:12.5px; padding:6px 11px; }
+  .toolkit{ display:none; }
+  /* work cards: image-led, details live in the project view */
+  .work-row > .pcard{ flex-basis:82vw; aspect-ratio:4/5; }
+  .pcard .pcard-more p, .pcard .pcard-open{ display:none; }
+  .pcard-title{ font-size:30px; }
+  .pcard-tags{ margin-top:10px; flex-wrap:nowrap; }
+  .pcard-tags .tag:nth-child(n+3){ display:none; }
+  .pcard .frames{ filter:brightness(.8); }
+  /* films: swipeable row instead of a tall grid */
+  .films{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:12px; margin:0 calc(-1 * var(--pad)); padding:0 var(--pad) 6px; scroll-padding-left:var(--pad); scrollbar-width:none; }
+  .films::-webkit-scrollbar{ display:none; }
+  .films > .film{ flex:0 0 56vw; scroll-snap-align:start; }
+  .films::after{ content:''; flex:0 0 1px; }
+  .film-info h3{ font-size:20px; }
+  .sec-sub--under{ font-size:15px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  /* contact */
+  .contact-big{ font-size:clamp(38px, 11vw, 50px); }
+  .email{ font-size:18px; }
+  .socials{ margin-top:20px; }
+  footer{ margin-top:48px; }
+  .lb-nav{ display:none; }
+}
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
   *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
@@ -608,10 +649,6 @@ const site = {
     {
       "src": "images/web/1786885541886_Keyframe_3.jpg",
       "caption": "Spell.EXE, Keyframe 03"
-    },
-    {
-      "src": "images/web/1786444165089_DTB.jpg",
-      "caption": "Dust to Bloom, Still"
     },
     {
       "src": "images/web/1786885535368_Keyframe_2.jpg",
