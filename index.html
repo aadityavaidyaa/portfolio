@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aaditya Vaidya — 3D Generalist · Lighting, Lookdev &amp; Environments</title>
+<title>Aaditya Vaidya | 3D Generalist · Lighting, Lookdev &amp; Environments</title>
 <meta name="description" content="Portfolio of Aaditya Vaidya, a 3D generalist focused on lighting, lookdev and environments. Animation student at Whistling Woods International, Mumbai.">
 <meta name="theme-color" content="#0B0B0C">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Aaditya Vaidya — Lighting, Lookdev & Environments">
+<meta property="og:title" content="Aaditya Vaidya | Lighting, Lookdev & Environments">
 <meta property="og:description" content="Keyframes, short films and environments by Aaditya Vaidya.">
 <meta property="og:url" content="https://aadityavaidya.in/">
 <meta property="og:image" content="https://aadityavaidya.in/images/web/1786885554121_Keyframe_5.jpg">
@@ -212,7 +212,7 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
 .reveal{ opacity:0; transform:translateY(14px); transition:opacity .7s ease, transform .7s var(--ease); }
 .reveal.in{ opacity:1; transform:none; }
 
-/* WORK — uniform cards with hover details */
+/* WORK: uniform cards with hover details */
 .work-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:clamp(16px,2vw,28px); }
 @media (max-width:760px){ .work-grid{ grid-template-columns:1fr; } }
 .pcard{
@@ -555,7 +555,7 @@ footer a:hover{ color:var(--ink); }
 /* SITE_DATA_START */
 const site = {
   "name": "Aaditya Vaidya",
-  "role": "3D Generalist — Lighting, Lookdev & Environments",
+  "role": "3D Generalist · Lighting, Lookdev & Environments",
   "heroTagline": "I build and light worlds for animation and film, chasing the moment a frame stops looking rendered and starts feeling real.",
   "email": "aadityavaidya.designs@gmail.com",
   "contactBlurb": "Have a shot that needs light?",
@@ -568,7 +568,7 @@ const site = {
     },
     {
       "src": "images/web/1786885554121_Keyframe_5.jpg",
-      "caption": "Spell.EXE — Keyframe 05"
+      "caption": "Spell.EXE, Keyframe 05"
     },
     {
       "src": "https://cdna.artstation.com/p/assets/images/images/091/849/020/large/aaditya-vaidya-final-render-1.webp?1757988568",
@@ -576,19 +576,19 @@ const site = {
     },
     {
       "src": "images/web/1786885541886_Keyframe_3.jpg",
-      "caption": "Spell.EXE — Keyframe 03"
+      "caption": "Spell.EXE, Keyframe 03"
     },
     {
       "src": "images/web/1786444165089_DTB.jpg",
-      "caption": "Dust to Bloom — Still"
+      "caption": "Dust to Bloom, Still"
     },
     {
       "src": "images/web/1786885535368_Keyframe_2.jpg",
-      "caption": "Spell.EXE — Keyframe 02"
+      "caption": "Spell.EXE, Keyframe 02"
     },
     {
       "src": "images/web/1786885484548_Keyframe_1.jpg",
-      "caption": "Spell.EXE — Keyframe 01"
+      "caption": "Spell.EXE, Keyframe 01"
     }
   ],
   "about": [
@@ -694,12 +694,11 @@ const site = {
         "viewport": null
       },
       "gallery": [
-        "https://cdna.artstation.com/p/assets/images/images/089/744/210/large/aaditya-vaidya-japtest-1.jpg?1751837527",
-        "https://cdnb.artstation.com/p/assets/images/images/089/744/239/large/aaditya-vaidya-teruterubozu-1.jpg?1751837606"
+        "https://cdna.artstation.com/p/assets/images/images/089/744/210/large/aaditya-vaidya-japtest-1.jpg?1751837527"
       ]
     },
     {
-      "title": "Isometric Café — Baked & Brewed",
+      "title": "Isometric Café: Baked & Brewed",
       "tags": [
         "Modelling",
         "Lighting",
@@ -730,12 +729,12 @@ const site = {
       "link": "https://www.artstation.com/artwork/Nq0Evb",
       "orientation": "landscape",
       "renders": {
-        "final": "https://cdnb.artstation.com/p/assets/images/images/091/849/247/large/aaditya-vaidya-shot1-2.webp?1757989520",
+        "final": "https://cdna.artstation.com/p/assets/images/images/091/849/234/large/aaditya-vaidya-shot2.webp?1757989501",
         "clay": null,
         "viewport": null
       },
       "gallery": [
-        "https://cdna.artstation.com/p/assets/images/images/091/849/234/large/aaditya-vaidya-shot2.webp?1757989501",
+        "https://cdnb.artstation.com/p/assets/images/images/091/849/247/large/aaditya-vaidya-shot1-2.webp?1757989520",
         "https://cdna.artstation.com/p/assets/images/images/091/849/240/large/aaditya-vaidya-shot3-1.webp?1757989507",
         "https://cdna.artstation.com/p/assets/images/images/091/849/244/large/aaditya-vaidya-shot4-1.webp?1757989514",
         "https://cdna.artstation.com/p/assets/images/images/091/849/250/large/aaditya-vaidya-shot5.webp?1757989527"
@@ -989,7 +988,7 @@ function openProject(p, startIdx){
   const link = isPlaceholderUrl(p.link) ? '' : `<a class="btn btn-line" href="${esc(p.link)}" target="_blank" rel="noopener" data-hover>View project <span class="arr">↗</span></a>`;
   inner.innerHTML = `
     <div class="stage">
-      ${passes.length > 1 ? passes.map(k => `<div class="layer" data-pass="${k}"><img src="${esc(r[k])}" alt="${esc(p.title)} — ${k}"></div>`).join('') : ''}
+      ${passes.length > 1 ? passes.map(k => `<div class="layer" data-pass="${k}"><img src="${esc(r[k])}" alt="${esc(p.title)} ${k}"></div>`).join('') : ''}
       <div class="layer" data-frame><img alt="${esc(p.title)}"></div>
       <div class="stage-ui">
         <span class="frame-count mono"></span>
@@ -1236,7 +1235,7 @@ addEventListener('scroll', () => {
   prog.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
 }, { passive:true });
 
-console.log('%cAaditya Vaidya — Lighting · Lookdev · Environments', 'color:#F0A85A;font-family:monospace;font-size:13px');
+console.log('%cAaditya Vaidya | Lighting · Lookdev · Environments', 'color:#F0A85A;font-family:monospace;font-size:13px');
 console.log('%cHiring? ' + site.email, 'color:#A19D94;font-family:monospace');
 })();
 </script>
