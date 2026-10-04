@@ -479,6 +479,19 @@ footer a:hover{ color:var(--ink); }
   footer{ margin-top:48px; }
   .lb-nav{ display:none; }
 }
+
+/* Touch devices: no hover-driven motion on cards so vertical scrolling stays smooth */
+@media (hover:none), (pointer:coarse){
+  .work-row, .films{ touch-action:pan-x pan-y; }
+  .pcard, .film{ -webkit-tap-highlight-color:transparent; }
+  .pcard .frames, .pcard:hover .frames, .pcard.active .frames{ transform:none !important; transition:none !important; }
+  .pcard .pvideo{ transform:none; }
+  .pcard::after, .pcard:hover::after{ transition:none; background:linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 30%, transparent 45%, rgba(0,0,0,.8) 100%); }
+  .pcard-title, .pcard-more, .pcard-more p, .pcard-tags, .pcard-open{ transition:none !important; }
+  .poster, .poster img, .film:hover .poster img{ transform:none !important; transition:none !important; }
+  .film .glare, .film .play{ display:none; }
+  .wipe, .reveal{ transform:none; }
+}
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
   *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
