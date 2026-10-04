@@ -213,8 +213,24 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
 .reveal.in{ opacity:1; transform:none; }
 
 /* WORK: uniform cards with hover details */
-.work-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:clamp(16px,2vw,28px); }
-@media (max-width:760px){ .work-grid{ grid-template-columns:1fr; } }
+.work-row{
+  display:flex; gap:clamp(14px,1.6vw,24px); overflow-x:auto; overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory; scroll-padding-left:var(--pad);
+  margin:0 calc(-1 * var(--pad)); padding:4px var(--pad) 6px; scrollbar-width:none;
+}
+.work-row::-webkit-scrollbar{ display:none; }
+.work-row.dragging{ scroll-snap-type:none; cursor:grabbing; }
+.work-row.dragging .pcard{ pointer-events:none; }
+.work-row > .pcard{ flex:0 0 min(46vw, 680px); scroll-snap-align:start; }
+.work-row::after{ content:''; flex:0 0 1px; }
+@media (max-width:760px){ .work-row > .pcard{ flex-basis:84vw; } }
+.work-ctrl{ display:flex; align-items:center; gap:20px; margin-top:26px; }
+.work-track{ flex:1; height:1px; background:var(--line-2); position:relative; overflow:hidden; }
+.work-track i{ position:absolute; left:0; top:0; bottom:0; width:20%; background:var(--accent); transition:transform .15s linear; }
+.work-count{ color:var(--faint); font-variant-numeric:tabular-nums; min-width:62px; }
+.arrow{ width:46px; height:46px; border-radius:50%; border:1px solid var(--line-2); display:grid; place-items:center; transition:border-color .25s, background .25s, color .25s, opacity .25s; }
+.arrow:hover{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+.arrow:disabled{ opacity:.3; pointer-events:none; }
 .pcard{
   position:relative; aspect-ratio:16/10; border-radius:8px; overflow:hidden; background:#000;
   cursor:pointer; isolation:isolate; display:block; width:100%; text-align:left;
@@ -484,7 +500,13 @@ footer a:hover{ color:var(--ink); }
           <h2 class="sec-title">Light, <em>atmosphere</em><br>&amp; the spaces between.</h2>
         </div>
       </div>
-      <div class="work-grid" id="projects"></div>
+      <div class="work-row" id="projects"></div>
+      <div class="work-ctrl">
+        <span class="work-count mono" id="workCount"></span>
+        <div class="work-track"><i id="workBar"></i></div>
+        <button class="arrow" id="workPrev" aria-label="Previous projects" data-hover>←</button>
+        <button class="arrow" id="workNext" aria-label="Next projects" data-hover>→</button>
+      </div>
     </div>
   </section>
 
@@ -972,7 +994,50 @@ realProjects.forEach((p, pi) => {
   }
   el.addEventListener('click', () => openProject(p, cur < framesOf(p).length ? cur : 0));
 });
-if (realProjects.length % 2 === 1){
+/* horizontal row: arrows, progress, drag */
+(() => {
+  const row = projWrap, bar = $('#workBar'), cnt = $('#workCount'), prev = $('#workPrev'), next = $('#workNext');
+  const cards = () => [...row.querySelectorAll('.pcard')];
+  const stepW = () => { const c = cards()[0]; return c ? c.getBoundingClientRect().width + parseFloat(getComputedStyle(row).columnGap || 20) : 400; };
+  function update(){
+    const max = row.scrollWidth - row.clientWidth;
+    const vis = Math.min(1, row.clientWidth / row.scrollWidth);
+    bar.style.width = (vis * 100) + '%';
+    bar.style.transform = `translateX(${max > 0 ? (row.scrollLeft / max) * ((1 - vis) / vis) * 100 : 0}%)`;
+    const n = cards().length;
+    const first = Math.min(n, Math.round(row.scrollLeft / stepW()) + 1);
+    cnt.textContent = `${pad(first)} / ${pad(n)}`;
+    prev.disabled = row.scrollLeft < 4;
+    next.disabled = row.scrollLeft > max - 4;
+    document.querySelector('.work-ctrl').style.display = max > 4 ? '' : 'none';
+  }
+  prev.onclick = () => row.scrollBy({ left: -stepW(), behavior: 'smooth' });
+  next.onclick = () => row.scrollBy({ left: stepW(), behavior: 'smooth' });
+  row.addEventListener('scroll', update, { passive:true });
+  addEventListener('resize', update);
+  // drag with mouse
+  let down = false, sx = 0, sl = 0, moved = false;
+  row.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') return; down = true; moved = false; sx = e.clientX; sl = row.scrollLeft; });
+  addEventListener('pointermove', (e) => {
+    if (!down) return;
+    const dx = e.clientX - sx;
+    if (!moved && Math.abs(dx) > 6){ moved = true; row.classList.add('dragging'); }
+    if (moved) row.scrollLeft = sl - dx;
+  });
+  addEventListener('pointerup', () => {
+    if (!down) return; down = false;
+    if (moved){
+      row.classList.remove('dragging');
+      const i = Math.round(row.scrollLeft / stepW());
+      row.scrollTo({ left: i * stepW(), behavior: 'smooth' });
+    }
+  });
+  row.addEventListener('click', (e) => { if (moved){ e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  // keyboard when focused in row
+  row.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') next.click(); if (e.key === 'ArrowLeft') prev.click(); });
+  update(); setTimeout(update, 500);
+})();
+if (false){
   const soon = document.createElement('div');
   soon.className = 'pcard soon wipe';
   soon.innerHTML = `<div class="pcard-top mono"><span>${pad(realProjects.length + 1)}</span><span>In the works</span></div>
