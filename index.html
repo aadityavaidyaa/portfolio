@@ -6,6 +6,7 @@
 <title>Aaditya Vaidya — 3D Generalist · Lighting, Lookdev &amp; Environments</title>
 <meta name="description" content="Portfolio of Aaditya Vaidya, a 3D generalist focused on lighting, lookdev and environments. Animation student at Whistling Woods International, Mumbai.">
 <meta name="theme-color" content="#0B0B0C">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Aaditya Vaidya — Lighting, Lookdev & Environments">
 <meta property="og:description" content="Keyframes, short films and environments by Aaditya Vaidya.">
@@ -53,16 +54,15 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .progress{ position:fixed; top:0; left:0; height:2px; width:100%; background:var(--accent); transform-origin:left; transform:scaleX(0); z-index:850; }
 /* split title words */
 .w{ display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:.1em; margin-bottom:-.1em; }
-.w > span{ display:inline-block; transform:translateY(110%); transition:transform 1.1s var(--ease); transition-delay:calc(var(--i) * 60ms); }
+.w > span{ display:inline-block; transform:translateY(110%); transition:transform .8s var(--ease); transition-delay:calc(var(--i) * 35ms); }
 .in .w > span{ transform:none; }
 /* image wipe-in */
-.wipe{ clip-path:inset(12% 0 0 0 round 8px); opacity:0; transform:translateY(40px); transition:clip-path 1.3s var(--ease), opacity .8s, transform 1.3s var(--ease); }
-.wipe.in{ clip-path:inset(0 0 0 0 round 8px); opacity:1; transform:none; }
+.wipe{ opacity:0; transform:translateY(14px); transition:opacity .7s ease, transform .7s var(--ease); }
+.wipe.in{ opacity:1; transform:none; }
 /* film grain */
 .grain{
   position:fixed; inset:-100%; width:300%; height:300%; pointer-events:none; z-index:900; opacity:.07;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:grain 1s steps(6) infinite;
 }
 @keyframes grain{
   0%{transform:translate(0,0)} 20%{transform:translate(-3%,2%)} 40%{transform:translate(2%,-4%)}
@@ -150,15 +150,6 @@ header.hide{ transform:translateY(-100%); }
 .letterbox{ position:absolute; left:0; right:0; height:50%; background:#000; z-index:4; transition:height 1.5s cubic-bezier(.7,0,.2,1); }
 .letterbox.top{ top:0; } .letterbox.bot{ bottom:0; }
 .hero.open .letterbox{ height:var(--lb, 7vh); }
-.hero-meta{
-  position:absolute; z-index:5; left:0; right:0; display:flex; justify-content:space-between; align-items:center;
-  padding:0 var(--pad); color:rgba(255,255,255,.55); opacity:0; transition:opacity 1s .9s;
-}
-.hero.open .hero-meta{ opacity:1; }
-.hero-meta.top{ top:calc(var(--lb, 7vh) + 84px); }
-.hero-meta .rec{ display:inline-flex; align-items:center; gap:8px; }
-.hero-meta .rec::before{ content:''; width:7px; height:7px; border-radius:50%; background:#E5484D; animation:blink 1.4s steps(2) infinite; }
-@keyframes blink{ 50%{ opacity:0; } }
 .hero-content{
   position:absolute; z-index:5; left:0; right:0; bottom:calc(var(--lb, 7vh) + 40px);
 }
@@ -200,16 +191,9 @@ header.hide{ transform:translateY(-100%); }
 @media (max-width:520px){ .hero-caption .cap{ display:none; } }
 @media (max-width:860px){
   .hero-content .wrap{ grid-template-columns:1fr; gap:22px; }
-  .hero-meta.top .hide-sm{ display:none; }
   .hero-caption{ left:var(--pad); right:auto; justify-content:flex-start; }
 }
 
-/* marquee */
-.marquee{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); overflow:hidden; padding:20px 0; background:var(--bg); }
-.marquee-track{ display:flex; width:max-content; will-change:transform; }
-.marquee-track span{ font-family:var(--serif); font-size:clamp(22px,2.6vw,34px); color:var(--dim); padding:0 28px; white-space:nowrap; display:flex; align-items:center; gap:56px; }
-.marquee-track span::after{ content:'✦'; font-size:.5em; color:var(--accent); }
-@keyframes marq{ to{ transform:translateX(-50%); } }
 
 /* sections */
 section{ position:relative; padding:clamp(90px, 12vw, 170px) 0; }
@@ -221,7 +205,7 @@ section{ position:relative; padding:clamp(90px, 12vw, 170px) 0; }
 .sec-sub{ color:var(--dim); max-width:560px; margin-top:22px; font-size:17px; }
 @media (max-width:860px){ .sec-head{ grid-template-columns:1fr; gap:14px; } .sec-num{ flex-direction:row; gap:14px; padding-top:0; } }
 
-.reveal{ opacity:0; transform:translateY(40px); transition:opacity 1s var(--ease), transform 1s var(--ease); }
+.reveal{ opacity:0; transform:translateY(14px); transition:opacity .7s ease, transform .7s var(--ease); }
 .reveal.in{ opacity:1; transform:none; }
 
 /* WORK — uniform cards with hover details */
@@ -429,7 +413,6 @@ footer a:hover{ color:var(--ink); }
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-right">
-      <span class="tc mono" aria-hidden="true">TC <b id="tc">00:00:00:00</b></span>
       <a href="#contact" class="nav-cta mono" data-hover>Get in touch</a>
       <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span><span></span></button>
     </div>
@@ -443,12 +426,6 @@ footer a:hover{ color:var(--ink); }
     <div class="hero-shade"></div>
     <div class="letterbox top"></div>
     <div class="letterbox bot"></div>
-
-    <div class="hero-meta top mono">
-      <span class="rec">Showreel stills</span>
-      <span class="hide-sm" id="heroLoc">Mumbai, IN · <span id="istClock">--:--</span> IST</span>
-      <span class="hide-sm">2.39 : 1</span>
-    </div>
 
     <div class="hero-content">
       <div class="wrap">
@@ -465,12 +442,10 @@ footer a:hover{ color:var(--ink); }
     </div>
 
     <div class="hero-caption mono">
-      <span class="cap" id="heroCap"></span>
       <div class="hero-dots" id="heroDots"></div>
     </div>
   </section>
 
-  <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
 
   <section id="about">
     <div class="wrap">
@@ -493,7 +468,6 @@ footer a:hover{ color:var(--ink); }
         <div class="sec-num mono"><b>02</b><span>Selected work</span></div>
         <div>
           <h2 class="sec-title">Light, <em>atmosphere</em><br>&amp; the spaces between.</h2>
-          <p class="sec-sub">Hover a project to scrub through its frames and read the details. Click to open it.</p>
         </div>
       </div>
       <div class="work-grid" id="projects"></div>
@@ -506,7 +480,7 @@ footer a:hover{ color:var(--ink); }
         <div class="sec-num mono"><b>03</b><span>Short films</span></div>
         <div>
           <h2 class="sec-title">Stories, <em>start</em><br>to final render.</h2>
-          <p class="sec-sub">Shorts I've directed and animated. Click a poster to watch the film and browse stills.</p>
+          <p class="sec-sub">Shorts I've directed and animated.</p>
         </div>
       </div>
       <div class="films" id="filmList"></div>
@@ -724,7 +698,7 @@ email.textContent = site.email; email.href = 'mailto:' + site.email;
 /* ---------- hero ---------- */
 const projectFrames = (site.projects || []).flatMap(p => [p.renders && p.renders.final, ...(p.gallery || [])].filter(Boolean).map(src => ({ src, caption: p.title })));
 const heroFrames = (site.heroFrames && site.heroFrames.length) ? site.heroFrames : projectFrames.slice(0, 5);
-const framesEl = $('#heroFrames'), dotsEl = $('#heroDots'), capEl = $('#heroCap');
+const framesEl = $('#heroFrames'), dotsEl = $('#heroDots'), capEl = null;
 const HERO_DUR = 6000;
 heroFrames.forEach((f, i) => {
   const d = document.createElement('div');
@@ -743,7 +717,6 @@ function showHero(i, manual){
   heroIdx = (i + heroFrames.length) % heroFrames.length;
   [...framesEl.children].forEach((el, k) => el.classList.toggle('on', k === heroIdx));
   [...dotsEl.children].forEach((el, k) => { el.classList.remove('on'); if (k === heroIdx){ void el.offsetWidth; el.classList.add('on'); } });
-  capEl.textContent = `${pad(heroIdx + 1)} / ${pad(heroFrames.length)} — ${heroFrames[heroIdx].caption || ''}`;
   clearTimeout(heroTimer);
   if (!reduce) heroTimer = setTimeout(() => showHero(heroIdx + 1), HERO_DUR);
 }
@@ -756,30 +729,6 @@ function sizeLetterbox(){
 sizeLetterbox(); addEventListener('resize', sizeLetterbox);
 showHero(0);
 requestAnimationFrame(() => setTimeout(() => hero.classList.add('open'), 150));
-
-/* IST clock */
-function tickClock(){
-  try {
-    $('#istClock').textContent = new Intl.DateTimeFormat('en-GB', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata' }).format(new Date());
-  } catch(e){}
-}
-tickClock(); setInterval(tickClock, 15000);
-if (site.location) $('#heroLoc').firstChild.textContent = site.location + ' · ';
-
-/* Timecode (24fps since page load) */
-const tcEl = $('#tc'), t0 = performance.now();
-(function tc(){
-  const f = Math.floor((performance.now() - t0) / (1000 / 24));
-  const fr = f % 24, s = Math.floor(f / 24) % 60, m = Math.floor(f / 1440) % 60, h = Math.floor(f / 86400);
-  tcEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(fr)}`;
-  requestAnimationFrame(tc);
-})();
-
-/* ---------- marquee ---------- */
-const tools = (site.skills && (site.skills.Software || Object.values(site.skills).flat())) || [];
-const mq = $('#marquee');
-const mqHTML = tools.map(t => `<span>${esc(t)}</span>`).join('');
-mq.innerHTML = mqHTML + mqHTML;
 
 /* ---------- lightbox ---------- */
 const lb = $('#lightbox'), lbImg = $('#lbImg');
@@ -795,7 +744,7 @@ function renderLb(){
   img.onload = img.onerror = () => { lbImg.src = src; lbImg.style.opacity = 1; };
   img.src = src;
   $('#lbTitle').textContent = lbTitle;
-  $('#lbCount').textContent = `Frame ${pad(lbIdx + 1)} / ${pad(lbList.length)}  ·  ← → to navigate  ·  Esc to close`;
+  $('#lbCount').textContent = `${pad(lbIdx + 1)} / ${pad(lbList.length)}`;
   $('#lbPrev').style.display = $('#lbNext').style.display = lbList.length > 1 ? '' : 'none';
 }
 function closeLb(){ lb.classList.remove('open'); if (!document.querySelector('#filmModal.open, #projModal.open')) document.body.style.overflow = ''; }
@@ -824,7 +773,6 @@ realProjects.forEach((p, pi) => {
   const frames = framesOf(p);
   const el = document.createElement('button');
   el.className = 'pcard wipe';
-  el.dataset.cursor = frames.length > 1 ? 'Scrub ⟷' : 'Open';
   el.setAttribute('aria-label', 'Open project ' + (p.title || ''));
   el.innerHTML = `
     <div class="frames">${frames.map((f, i) => `<img src="${esc(f)}" alt="" loading="lazy" class="${i ? '' : 'on'}">`).join('')}</div>
@@ -835,7 +783,7 @@ realProjects.forEach((p, pi) => {
         ${p.description ? `<p>${esc(p.description)}</p>` : ''}
         ${(p.tags || []).length ? `<div class="pcard-tags">${p.tags.map(t => `<span class="tag mono">${esc(t)}</span>`).join('')}</div>` : ''}
         ${frames.length > 1 ? `<div class="scrub">${frames.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}
-        <span class="pcard-open mono">Open project →</span>
+        <span class="pcard-open mono">View project →</span>
       </div></div>
     </div>`;
   projWrap.appendChild(el);
@@ -888,7 +836,7 @@ function openProject(p, startIdx){
     <div class="modal-meta"><h3>${esc(p.title)}</h3><div class="pm-tags">${(p.tags || []).map(t => `<span class="tag mono">${esc(t)}</span>`).join('')}</div></div>
     ${p.description ? `<p class="pm-desc">${esc(p.description)}</p>` : ''}
     ${link ? `<div style="margin-top:20px">${link}</div>` : ''}`;
-  $('#pmKicker').textContent = `Project · ${pad(frames.length)} frames · ← → to browse`;
+  $('#pmKicker').textContent = 'Project';
 
   const stage = inner.querySelector('.stage');
   const frameLayer = stage.querySelector('[data-frame]'), frameImg = frameLayer.querySelector('img');
@@ -934,10 +882,10 @@ function openFilm(f){
   const id = ytId(f.watchUrl);
   const v = $('#fmVideo');
   v.innerHTML = id
-    ? `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1" title="${esc(f.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
+    ? `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0&playsinline=1${location.protocol.startsWith('http') ? '&origin=' + encodeURIComponent(location.origin) : ''}" title="${esc(f.title)}" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>`
     : (f.watchUrl ? `<a class="noplay mono" href="${esc(f.watchUrl)}" target="_blank" rel="noopener">Watch externally ↗</a>` : `<div class="noplay mono">In production</div>`);
   $('#fmTitle').textContent = f.title;
-  $('#fmMeta').textContent = `${f.date || ''} · ${f.status || ''}`;
+  $('#fmMeta').innerHTML = `${esc(f.date || '')} · ${esc(f.status || '')}${f.watchUrl ? ` · <a href="${esc(f.watchUrl)}" target="_blank" rel="noopener" style="color:var(--accent)">YouTube ↗</a>` : ''}`;
   const stills = (f.stills || []).filter(Boolean);
   $('#fmStills').innerHTML = stills.map((s, i) => `<button data-i="${i}" data-hover><img src="${esc(s)}" alt="${esc(f.title)} still ${i + 1}" loading="lazy"></button>`).join('');
   $('#fmStills').querySelectorAll('button').forEach(b => b.onclick = () => openLightbox(stills, +b.dataset.i, f.title));
@@ -953,7 +901,6 @@ const filmList = $('#filmList');
   const target = (f.watchUrl || f.link || '').trim();
   const el = document.createElement(released && target ? 'button' : 'div');
   el.className = 'film reveal';
-  if (released && target){ el.dataset.cursor = 'Play'; }
   el.innerHTML = `
     <div class="poster">
       <span class="status mono${released ? '' : ' wip'}">${esc(released ? 'Released' : (f.status || 'In progress'))}</span>
@@ -1020,11 +967,7 @@ let lastY = scrollY;
 addEventListener('scroll', () => {
   const y = scrollY;
   header.classList.toggle('solid', y > 40);
-  header.classList.toggle('hide', y > lastY && y > innerHeight * .8 && !document.body.classList.contains('menu-open'));
   lastY = y;
-  if (!reduce && y < innerHeight){
-    framesEl.style.transform = `translate3d(0, ${y * .25}px, 0)`;
-  }
 }, { passive:true });
 $('#menuBtn').onclick = () => document.body.classList.toggle('menu-open');
 document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => document.body.classList.remove('menu-open')));
@@ -1038,7 +981,7 @@ const spy = new IntersectionObserver((ents) => ents.forEach(en => {
 /* ---------- reveal ---------- */
 const io = new IntersectionObserver((ents) => ents.forEach(en => {
   if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
-}), { threshold:.12 });
+}), { threshold:.05, rootMargin:'0px 0px -5% 0px' });
 document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
   if (el.classList.contains('film')) el.style.transitionDelay = (i % 4) * 90 + 'ms';
   if (el.classList.contains('pcard')) el.style.transitionDelay = ([...el.parentNode.children].indexOf(el) % 2) * 120 + 'ms';
@@ -1113,21 +1056,12 @@ if (canHover && !reduce){
   })();
 }
 
-/* ---------- marquee reacts to scroll speed + progress bar ---------- */
-const track = $('#marquee'), prog = $('#progress');
-let mqX = 0, vel = 0, prevY = scrollY;
-(function mqLoop(){
-  const y = scrollY; vel += ((y - prevY) - vel) * .1; prevY = y;
-  if (!reduce){
-    mqX -= .5 + Math.min(Math.abs(vel), 60) * .25;
-    const half = track.scrollWidth / 2;
-    if (half && -mqX >= half) mqX += half;
-    track.style.transform = `translateX(${mqX}px) skewX(${Math.max(-12, Math.min(12, -vel * .3))}deg)`;
-  }
+/* ---------- scroll progress bar ---------- */
+const prog = $('#progress');
+addEventListener('scroll', () => {
   const max = document.documentElement.scrollHeight - innerHeight;
-  prog.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-  requestAnimationFrame(mqLoop);
-})();
+  prog.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+}, { passive:true });
 
 console.log('%cAaditya Vaidya — Lighting · Lookdev · Environments', 'color:#F0A85A;font-family:monospace;font-size:13px');
 console.log('%cHiring? ' + site.email, 'color:#A19D94;font-family:monospace');
