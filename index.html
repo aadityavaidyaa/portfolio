@@ -337,8 +337,10 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
   position:absolute; top:12px; left:12px; z-index:2; padding:5px 10px; border-radius:100px;
   background:rgba(0,0,0,.55); backdrop-filter:blur(6px); color:rgba(255,255,255,.85); display:flex; align-items:center; gap:7px;
 }
-.award{ position:absolute; top:12px; right:12px; z-index:2; padding:5px 10px; border-radius:100px; background:var(--accent); color:#111; font-weight:500; box-shadow:0 4px 16px rgba(0,0,0,.35); }
-@media (max-width:520px){ .award{ top:auto; bottom:10px; right:10px; } }
+.films:has(.award) .award-slot{ height:30px; margin-bottom:10px; display:flex; justify-content:center; align-items:center; }
+.award-slot:empty{ visibility:hidden; }
+.award{ display:inline-flex; align-items:center; gap:7px; padding:6px 13px; border-radius:100px; background:var(--accent); color:#111; font-weight:500; white-space:nowrap; }
+@media (max-width:520px){ .award{ font-size:10px; padding:5px 10px; } }
 .status::before{ content:''; width:6px; height:6px; border-radius:50%; background:#4ADE80; }
 .status.wip::before{ background:var(--accent); animation:blink 1.4s steps(2) infinite; }
 .poster-ph{
@@ -1361,9 +1363,9 @@ const filmList = $('#filmList');
   const el = document.createElement(released && target ? 'button' : 'div');
   el.className = 'film reveal';
   el.innerHTML = `
+    <div class="award-slot">${f.award ? `<span class="award mono"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M7 3h10v2h3v3a4 4 0 0 1-4 4h-.3A5 5 0 0 1 13 14.9V17h3v2H8v-2h3v-2.1A5 5 0 0 1 8.3 12H8a4 4 0 0 1-4-4V5h3V3zm0 4H6v1a2 2 0 0 0 1 1.7V7zm10 0v2.7A2 2 0 0 0 18 8V7h-1zM7 20h10v1H7z"/></svg>${esc(f.award)}</span>` : ''}</div>
     <div class="poster">
       <span class="status mono${released ? '' : ' wip'}">${esc(released ? 'Released' : (f.status || 'In progress'))}</span>
-      ${f.award ? `<span class="award mono">★ ${esc(f.award)}</span>` : ''}
       ${f.image ? `<img class="pbg" src="${esc(f.image)}" alt="" aria-hidden="true" loading="lazy"><img class="pmain" src="${esc(f.image)}" alt="${esc(f.title)} poster" loading="lazy">` : `<div class="poster-ph"><span class="t">${esc(f.title)}</span><span class="s mono">In production · ${esc(f.date || '')}</span></div>`}
       <div class="glare"></div>
       ${released && target ? '<span class="play"></span>' : ''}
