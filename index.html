@@ -381,14 +381,14 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
 .me-fig.hop .me-shadow{ animation:meShadow .75s cubic-bezier(.3,.7,.4,1); }
 @keyframes meHop{ 0%{ transform:none; } 14%{ transform:scale(1.06,.9); } 42%{ transform:translateY(-14%) scale(.95,1.06) rotate(-3deg); } 66%{ transform:translateY(0) scale(1.07,.92); } 82%{ transform:scale(.98,1.02); } 100%{ transform:none; } }
 @keyframes meShadow{ 0%,100%{ transform:none; opacity:1; } 42%{ transform:scale(.6); opacity:.45; } }
-.me-label{ position:absolute; right:2%; top:3%; pointer-events:none; text-align:right; opacity:0; transition:opacity .4s .9s; }
+.me-label{ position:absolute; left:62%; bottom:90%; pointer-events:none; text-align:left; white-space:nowrap; opacity:0; transition:opacity .4s .9s; }
 .me-stage.in .me-label{ opacity:1; }
 .me-label b{ display:inline-block; font-family:var(--serif); font-style:italic; font-weight:400; font-size:clamp(30px,3vw,44px); line-height:1; color:var(--accent); transform:rotate(-7deg); transition:transform .4s var(--ease); }
 .me-stage:hover .me-label b{ transform:rotate(-3deg) scale(1.06); }
-.me-label svg{ display:block; width:clamp(64px,6vw,96px); margin:4px 0 0 auto; transform:translateX(-35%); overflow:visible; }
+.me-label svg{ display:block; width:clamp(48px,4.5vw,72px); margin:2px 0 0 0; transform:translateX(-30%) scaleY(.8); overflow:visible; }
 .me-label path{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:160; stroke-dashoffset:160; transition:stroke-dashoffset 1s var(--ease); }
 .me-stage.arrived .me-label path{ stroke-dashoffset:0; }
-.me-bubble{ position:absolute; left:2%; top:3%; max-width:min(52%,220px); padding:10px 14px; border-radius:16px 16px 4px 16px; background:var(--ink); color:var(--bg); font-size:15px; line-height:1.35; pointer-events:none; opacity:0; transform:translateY(8px) scale(.9); transform-origin:100% 100%; transition:opacity .25s, transform .35s var(--ease); }
+.me-bubble{ position:absolute; right:66%; bottom:93%; width:max-content; max-width:200px; padding:10px 14px; border-radius:16px 16px 4px 16px; background:var(--ink); color:var(--bg); font-size:15px; line-height:1.35; pointer-events:none; opacity:0; transform:translateY(8px) scale(.9); transform-origin:100% 100%; transition:opacity .25s, transform .35s var(--ease); }
 .me-bubble.show{ opacity:1; transform:none; }
 @media (prefers-reduced-motion: reduce){ .me-float, .me-stage.arrived .me-float{ animation:none; } .me-enter{ transition:none; } }
 .me-info .about-side{ margin-top:clamp(24px,3vw,40px); }
@@ -600,11 +600,11 @@ footer a:hover{ color:var(--ink); }
                 <span class="me-shadow" aria-hidden="true"></span>
                 <span class="me-tilt"><span class="me-float"><img src="images/web/me.webp" alt="" width="456" height="900"></span></span>
               </button>
-            </div>
-            <div class="me-label" aria-hidden="true"><b>That's me!</b>
+              <div class="me-label" aria-hidden="true"><b>That's me!</b>
               <svg viewBox="0 0 100 60"><path d="M92 4 C 80 30, 50 46, 12 46 M12 46 L 24 36 M12 46 L 25 55"/></svg>
             </div>
-            <div class="me-bubble" id="meBubble" role="status" aria-live="polite"></div>
+              <div class="me-bubble" id="meBubble" role="status" aria-live="polite"></div>
+            </div>
           </div>
         </div>
         <div class="me-info">
@@ -1578,7 +1578,20 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     if (!reduce){ fig.classList.remove('hop'); void fig.offsetWidth; fig.classList.add('hop'); }
     say(lines[i++ % lines.length]);
   });
+  // tiny synthesized "pop" for the chat bubble (no audio file needed)
+  let actx = null;
+  const unlock = () => { try{ actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); }catch(e){} };
+  ['pointerdown','keydown','touchstart'].forEach(ev => addEventListener(ev, unlock, { once:true, passive:true }));
+  function pop(){
+    if (!actx || actx.state !== 'running') return;
+    const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(1250, t + 0.06);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.15);
+  }
   function say(t){
+    unlock(); pop();
     bubble.textContent = t;
     bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
     clearTimeout(hideT); hideT = setTimeout(() => bubble.classList.remove('show'), 2600);
