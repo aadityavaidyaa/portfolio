@@ -514,7 +514,10 @@ footer a:hover{ color:var(--ink); }
   .sec-sub--under{ font-size:15px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   /* contact */
   .contact-big{ font-size:clamp(38px, 11vw, 50px); }
-  .email{ font-size:18px; }
+  .email{ font-size:18px; overflow-wrap:anywhere; }
+  .me-label b{ font-size:28px; }
+  .me-bubble{ font-size:14px; max-width:170px; }
+  h1, h2, h3, p, li, a, span{ overflow-wrap:break-word; }
   .socials{ margin-top:20px; }
   footer{ margin-top:48px; }
   .lb-nav{ display:none; }
@@ -1542,7 +1545,7 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     const e = es[0];
     if (e.isIntersecting && e.intersectionRatio >= .3 && !stage.classList.contains('in')){
       stage.classList.add('in');
-      arriveT = setTimeout(() => { stage.classList.add('arrived'); }, reduce ? 0 : 1000);
+      arriveT = setTimeout(() => { stage.classList.add('arrived'); keepOnScreen(label); }, reduce ? 0 : 1000);
       helloT = setTimeout(() => say("Hi, I'm Aadi!"), reduce ? 0 : 1150);
     } else if (!e.isIntersecting && stage.classList.contains('in')){
       clearTimeout(arriveT); clearTimeout(helloT); stage.classList.remove('in', 'arrived'); bubble.classList.remove('show'); i = 1;
@@ -1590,9 +1593,23 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
     o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.15);
   }
+  const label = stage.querySelector('.me-label');
+  function keepOnScreen(el){
+    if (!el) return;
+    el.style.marginLeft = '0px';
+    const r = el.getBoundingClientRect(), pad = 10, W = document.documentElement.clientWidth;
+    let dx = 0;
+    if (r.right > W - pad) dx = (W - pad) - r.right;
+    if (r.left + dx < pad) dx = pad - r.left;
+    el.style.marginLeft = dx ? dx + 'px' : '0px';
+  }
+  const fitBits = () => { if (stage.classList.contains('arrived')){ keepOnScreen(label); keepOnScreen(bubble); } };
+  addEventListener('resize', fitBits);
+  stage.addEventListener('transitionend', e => { if (e.target.classList.contains('me-enter')) fitBits(); });
   function say(t){
     unlock(); pop();
     bubble.textContent = t;
+    requestAnimationFrame(() => keepOnScreen(bubble));
     bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
     clearTimeout(hideT); hideT = setTimeout(() => bubble.classList.remove('show'), 2600);
   }
