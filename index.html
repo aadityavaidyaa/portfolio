@@ -362,6 +362,23 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
 
 /* ABOUT */
 .about{ display:grid; grid-template-columns:1.25fr 1fr; gap:clamp(32px,5vw,80px); }
+.about--me{ grid-template-columns:minmax(300px,.9fr) 1.35fr; align-items:start; }
+.me-col{ position:sticky; top:90px; height:min(78vh,720px); }
+.me-stage{ position:relative; width:100%; height:100%; border-radius:8px; overflow:hidden;
+  background:radial-gradient(60% 50% at 50% 42%, rgba(240,168,90,.10), rgba(240,168,90,0) 70%), var(--bg-2); border:1px solid var(--line); cursor:grab; touch-action:pan-y; }
+.me-stage.dragging{ cursor:grabbing; }
+.me-stage canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; opacity:0; transition:opacity .8s var(--ease); }
+.me-stage.ready canvas{ opacity:1; }
+.me-fallback{ position:absolute; left:50%; bottom:6%; height:84%; transform:translateX(-50%); object-fit:contain; transition:opacity .6s; pointer-events:none; user-select:none; }
+.me-stage.ready .me-fallback{ opacity:0; }
+.me-tag{ position:absolute; left:16px; top:14px; color:var(--faint); font-size:12px; letter-spacing:.08em; text-transform:uppercase; pointer-events:none; }
+.me-modes{ position:absolute; left:50%; bottom:14px; transform:translateX(-50%); display:flex; gap:4px; padding:4px; border-radius:100px; background:rgba(11,11,12,.6); border:1px solid var(--line); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); opacity:0; transition:opacity .5s; }
+.me-stage.ready .me-modes{ opacity:1; }
+.me-modes button{ font:inherit; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); background:none; border:0; padding:7px 12px; border-radius:100px; cursor:pointer; transition:color .25s, background .25s; }
+.me-modes button:hover{ color:var(--ink); }
+.me-modes button.on{ background:var(--ink); color:var(--bg); }
+.me-info .about-side{ margin-top:clamp(24px,3vw,40px); }
+.films .film{ will-change:transform; }
 .about-text p{ font-size:clamp(19px, 1.7vw, 24px); line-height:1.5; color:var(--dim); margin-bottom:22px; }
 .about-text p:first-child{ color:var(--ink); }
 .facts{ display:flex; flex-direction:column; }
@@ -380,6 +397,7 @@ section{ position:relative; padding:clamp(64px, 7.5vw, 112px) 0; }
 .tool-col li:hover{ color:var(--ink); padding-left:8px; }
 @media (max-width:1000px){
   .about{ grid-template-columns:1fr; }
+  .me-col{ position:relative; top:0; height:min(64vh,560px); }
   .about > .spacer, .toolkit > .spacer{ display:none; }
   .toolkit{ grid-template-columns:repeat(2,1fr); }
 }
@@ -560,9 +578,21 @@ footer a:hover{ color:var(--ink); }
       <div class="sec-head reveal">
         <h2 class="sec-title">Chasing the <em>moment</em><br>a frame feels real.</h2>
       </div>
-      <div class="about">
-        <div class="about-text reveal" id="aboutText"></div>
-        <div class="about-side reveal"><div class="facts mono" id="facts"></div><div class="chips-wrap" id="chipsWrap"></div></div>
+      <div class="about about--me">
+        <div class="me-col reveal">
+          <div class="me-stage" id="meStage">
+            <img class="me-fallback" src="images/web/me.webp" alt="Aaditya as a stylised 3D character" width="408" height="612">
+            <canvas id="meCanvas" aria-hidden="true"></canvas>
+            <span class="me-tag mono">Me, in 3D</span>
+            <div class="me-modes mono" id="meModes">
+              <button data-mode="final" class="on">Final</button><button data-mode="clay">Clay</button><button data-mode="wire">Wire</button>
+            </div>
+          </div>
+        </div>
+        <div class="me-info">
+          <div class="about-text reveal" id="aboutText"></div>
+          <div class="about-side reveal"><div class="facts mono" id="facts"></div><div class="chips-wrap" id="chipsWrap"></div></div>
+        </div>
       </div>
       <div class="toolkit reveal" id="toolkit"></div>
     </div>
@@ -1461,6 +1491,159 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
 });
 
 })();
+</script>
+<script>
+// Films: posters drift at slightly different speeds as you scroll past (desktop only)
+(function(){
+  const list = document.getElementById('filmList');
+  if (!list || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const desk = matchMedia('(min-width:1001px) and (pointer:fine)');
+  let raf = 0;
+  function update(){
+    raf = 0;
+    const cards = list.querySelectorAll('.film');
+    if (!desk.matches){ cards.forEach(c => c.style.transform = ''); return; }
+    const r = list.getBoundingClientRect(), vh = innerHeight;
+    if (r.bottom < -200 || r.top > vh + 200) return;
+    const p = (vh - r.top) / (vh + r.height) - 0.5;      // -0.5 .. 0.5 while in view
+    cards.forEach((c, i) => { const amt = [36, -18, 52, -6][i % 4]; c.style.transform = `translate3d(0, ${(-p * amt).toFixed(1)}px, 0)`; });
+  }
+  const req = () => { if (!raf) raf = requestAnimationFrame(update); };
+  addEventListener('scroll', req, { passive:true }); addEventListener('resize', req);
+  new MutationObserver(req).observe(list, { childList:true }); req();
+})();
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}</script>
+<script type="module">
+// 3D "me" in the About section: scroll turns him, drag spins him, click makes him hop.
+const stage = document.getElementById('meStage');
+const canvas = document.getElementById('meCanvas');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let started = false;
+function hasGL(){ try{ const c=document.createElement('canvas'); return !!(c.getContext('webgl2')||c.getContext('webgl')); }catch(e){ return false; } }
+if (stage && canvas && hasGL()){
+  const io = new IntersectionObserver(es => { if (es.some(e=>e.isIntersecting) && !started){ started=true; io.disconnect(); init().catch(err=>console.warn('me viewer:',err)); } }, { rootMargin:'400px 0px' });
+  io.observe(stage);
+}
+async function init(){
+  const THREE = await import('three');
+  const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  const { MeshoptDecoder } = await import('three/addons/libs/meshopt_decoder.module.js');
+  const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'low-power' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  const scene = new THREE.Scene();
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environmentIntensity = 0.55;
+
+  const key = new THREE.DirectionalLight(0xffe2c0, 2.2); key.position.set(1.4, 2, 2); scene.add(key);
+  const rim = new THREE.DirectionalLight(0x9fc4ff, 1.6); rim.position.set(-1.8, 1.2, -1.6); scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xfff4e6, 0x1a1410, 0.5));
+
+  const camera = new THREE.PerspectiveCamera(28, 1, 0.05, 20);
+
+  // soft contact shadow
+  const sc = document.createElement('canvas'); sc.width = sc.height = 128;
+  const g = sc.getContext('2d'); const gr = g.createRadialGradient(64,64,0,64,64,64);
+  gr.addColorStop(0,'rgba(0,0,0,.55)'); gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0,0,128,128);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(0.75,0.75), new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(sc), transparent:true, depthWrite:false }));
+  shadow.rotation.x = -Math.PI/2; scene.add(shadow);
+
+  const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
+  const gltf = await loader.loadAsync('images/web/me.glb');
+  const model = gltf.scene;
+  const box = new THREE.Box3().setFromObject(model); const size = box.getSize(new THREE.Vector3()); const ctr = box.getCenter(new THREE.Vector3());
+  model.position.set(-ctr.x, -box.min.y, -ctr.z);
+  const pivot = new THREE.Group(); pivot.add(model); scene.add(pivot);
+  const H = size.y; shadow.position.y = 0.002;
+
+  // materials: final / clay / wire
+  const meshes = []; model.traverse(o => { if (o.isMesh){ meshes.push(o); o.userData.final = o.material; } });
+  const clay = new THREE.MeshStandardMaterial({ color:0xbdb6ad, roughness:0.85, metalness:0 });
+  const wire = new THREE.MeshBasicMaterial({ color:0xF0A85A, wireframe:true, transparent:true, opacity:0.55 });
+  const modes = document.getElementById('meModes');
+  modes.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    modes.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    const m = b.dataset.mode;
+    meshes.forEach(o => o.material = m === 'clay' ? clay : m === 'wire' ? wire : o.userData.final);
+    shadow.visible = m !== 'wire';
+    poke(0.5);
+  });
+
+  function fit(){
+    const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
+    renderer.setSize(w, h, false); camera.aspect = w / h;
+    const fov = THREE.MathUtils.degToRad(camera.fov);
+    let dist = (H * 1.28 / 2) / Math.tan(fov / 2);
+    const wNeeded = (H * 0.75 / 2) / (Math.tan(fov / 2) * camera.aspect);
+    dist = Math.max(dist, wNeeded);
+    camera.position.set(0, H * 0.55, dist); camera.lookAt(0, H * 0.47, 0);
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(fit).observe(stage); fit();
+
+  // interaction state
+  let spin = 0, vel = 0, dragging = false, lastX = 0, moved = 0;
+  let lean = { x:0, y:0 }, leanT = { x:0, y:0 }, hop = 0, hopSpin = 0;
+  let scrollRot = 0;
+  stage.addEventListener('pointerdown', e => { if (e.target.closest('.me-modes')) return; dragging = true; moved = 0; lastX = e.clientX; stage.classList.add('dragging'); stage.setPointerCapture(e.pointerId); poke(); });
+  stage.addEventListener('pointermove', e => {
+    const r = stage.getBoundingClientRect();
+    leanT.x = ((e.clientX - r.left) / r.width - 0.5); leanT.y = ((e.clientY - r.top) / r.height - 0.5);
+    if (dragging){ const dx = e.clientX - lastX; lastX = e.clientX; moved += Math.abs(dx); vel = dx * 0.012; spin += vel; }
+    poke();
+  });
+  const up = e => {
+    if (!dragging) return; dragging = false; stage.classList.remove('dragging');
+    if (moved < 5 && hop <= 0){ hop = 1; hopSpin = 0; }
+    poke();
+  };
+  stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+  stage.addEventListener('pointerleave', () => { leanT.x = leanT.y = 0; });
+
+  const section = document.getElementById('about');
+  function readScroll(){
+    const r = section.getBoundingClientRect(), vh = innerHeight;
+    const p = Math.min(1, Math.max(0, (vh - r.top) / (r.height + vh)));
+    scrollRot = (p - 0.5) * Math.PI * 1.6;
+  }
+  addEventListener('scroll', () => { readScroll(); poke(); }, { passive:true }); readScroll();
+
+  // render loop runs only while visible / active
+  let visible = true, running = false, idleUntil = 0, t0 = performance.now(), rotNow = scrollRot;
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) poke(); }).observe(stage);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) poke(); });
+  function poke(ms = 1.2){ idleUntil = performance.now() + ms * 1000; if (!running && visible && !document.hidden){ running = true; requestAnimationFrame(tick); } }
+  function tick(now){
+    const dt = Math.min(0.05, (now - t0) / 1000); t0 = now;
+    if (!dragging){ spin += vel; vel *= Math.pow(0.04, dt); }
+    lean.x += (leanT.x - lean.x) * Math.min(1, dt * 6); lean.y += (leanT.y - lean.y) * Math.min(1, dt * 6);
+    rotNow += (scrollRot - rotNow) * Math.min(1, dt * 5);
+    let y = 0;
+    if (!reduce) y = Math.sin(now / 900) * H * 0.008;
+    if (hop > 0){
+      hop = Math.max(0, hop - dt * 1.4); const k = 1 - hop;
+      y += Math.sin(k * Math.PI) * H * 0.22; hopSpin = (1 - Math.pow(1 - k, 3)) * Math.PI * 2;
+      if (hop === 0){ spin += Math.PI * 2; hopSpin = 0; }
+    }
+    pivot.position.y = y;
+    pivot.rotation.y = (reduce ? 0 : rotNow) + spin + hopSpin + lean.x * 0.5;
+    pivot.rotation.x = lean.y * 0.08;
+    const s = 1 - y / (H * 0.6); shadow.scale.setScalar(Math.max(0.5, s)); shadow.material.opacity = Math.max(0.3, s);
+    renderer.render(scene, camera);
+    const active = dragging || hop > 0 || Math.abs(vel) > 1e-4 || Math.abs(scrollRot - rotNow) > 1e-3 || Math.abs(leanT.x - lean.x) > 1e-3;
+    if (visible && !document.hidden && (active || now < idleUntil || !reduce)) requestAnimationFrame(tick); else running = false;
+  }
+  stage.classList.add('ready');
+  poke(2);
+}
 </script>
 </body>
 </html>
