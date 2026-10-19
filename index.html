@@ -493,7 +493,7 @@ body.spot-on .spot{ opacity:1; }
 /* hero image follows the mouse a little */
 .hero-frames{ transform:translate3d(var(--hx,0), var(--hy,0), 0) scale(1.04); transition:opacity 1.6s ease, transform 1.2s var(--ease); }
 /* headings: words rise in */
-.sec-title .wd{ display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:.08em; margin-bottom:-.08em; will-change:transform; }
+.sec-title .wd{ display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:.08em; margin-bottom:-.08em; }
 .sec-title .wd > span{ display:inline-block; transform:translateY(105%); transition:transform .9s var(--ease); transition-delay:calc(var(--i) * 45ms); }
 .sec-head.in .sec-title .wd > span{ transform:none; }
 @media (hover:none), (pointer:coarse){ .spot, .cur{ display:none; } .hero-frames{ transform:none; } .bulb{ display:none; } }
@@ -1074,10 +1074,6 @@ const site = {
       "label": "Instagram",
       "url": "https://www.instagram.com/aadityavaidyaa/"
     },
-    {
-      "label": "GitHub",
-      "url": "https://github.com/aadityavaidyaa"
-    }
   ]
 };
 /* SITE_DATA_END */
@@ -1681,41 +1677,6 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     };
     wrap(t);
   });
-
-  /* word repulsion — spring physics so motion never stutters */
-  if (fine && !reduce) {
-    document.querySelectorAll('.sec-title').forEach(title => {
-      const wds = [...title.querySelectorAll('.wd')];
-      if (!wds.length) return;
-      const state = wds.map(() => ({ x:0, y:0, vx:0, vy:0 }));
-      let mx = -9999, my = -9999, rafId = 0, hot = false;
-      const RADIUS = 130, STRENGTH = 420, SPRING = 0.07, DAMP = 0.68;
-      function tick() {
-        const rects = wds.map(wd => wd.getBoundingClientRect());
-        let alive = false;
-        wds.forEach((wd, i) => {
-          const s = state[i], r = rects[i];
-          const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-          const dx = mx - cx, dy = my - cy;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < RADIUS && dist > 0) {
-            const f = Math.pow(1 - dist / RADIUS, 2);
-            s.vx -= (dx / dist) * f * STRENGTH * 0.016;
-            s.vy -= (dy / dist) * f * STRENGTH * 0.016 * 0.4;
-          }
-          s.vx += -s.x * SPRING;  s.vy += -s.y * SPRING;
-          s.vx *= DAMP;            s.vy *= DAMP;
-          s.x  += s.vx;           s.y  += s.vy;
-          if (Math.abs(s.x) > 0.08 || Math.abs(s.y) > 0.08 || Math.abs(s.vx) > 0.04 || Math.abs(s.vy) > 0.04) alive = true;
-          wd.style.transform = `translate(${s.x.toFixed(2)}px,${s.y.toFixed(2)}px)`;
-        });
-        rafId = (hot || alive) ? requestAnimationFrame(tick) : 0;
-      }
-      const go = () => { if (!rafId) rafId = requestAnimationFrame(tick); };
-      title.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; hot = true; go(); });
-      title.addEventListener('mouseleave', () => { mx = -9999; my = -9999; hot = false; go(); });
-    });
-  }
 
   if (!fine || reduce) return;
   const root = document.documentElement, body = document.body, cur = document.getElementById('cur');
