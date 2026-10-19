@@ -167,7 +167,7 @@ section{ position:relative; padding:clamp(80px, 9vw, 150px) 0; }
   margin-bottom:clamp(40px,5vw,72px);
 }
 .sec-head > div{ display:contents; }
-.sec-label{ display:flex; gap:14px; align-items:baseline; color:var(--dim); font-size:14px; padding-top:.7em; }
+.sec-label{ display:none; }
 .sec-title{ font-weight:500; font-size:clamp(34px, 4.6vw, 72px); line-height:1.02; letter-spacing:-.035em; max-width:22ch; }
 .sec-title em{ font-style:normal; color:var(--accent); display:block; }
 .sec-sub{ grid-column:2; color:var(--dim); max-width:620px; font-size:16.5px; line-height:1.65; }
@@ -481,11 +481,11 @@ mark.hl{ color:inherit; background:linear-gradient(var(--accent), var(--accent))
 .in mark.hl{ background-size:100% 86%; color:var(--accent-ink); }
 /* light that follows the cursor (desktop) */
 .spot{ position:fixed; inset:0; z-index:4; pointer-events:none; opacity:0; transition:opacity .6s; mix-blend-mode:screen;
-  background:radial-gradient(520px circle at var(--mx,50%) var(--my,50%), rgba(242,174,78,.075), transparent 62%); }
+  background:radial-gradient(180px circle at var(--mx,50%) var(--my,50%), rgba(242,174,78,.06), transparent 62%); }
 body.spot-on .spot{ opacity:1; }
 /* "View" cursor badge over work and films */
-.cur{ position:fixed; left:0; top:0; z-index:940; pointer-events:none; width:84px; height:84px; margin:-42px 0 0 -42px; border-radius:50%;
-  background:var(--accent); color:var(--accent-ink); display:grid; place-items:center; font-size:13px; font-weight:500;
+.cur{ position:fixed; left:0; top:0; z-index:940; pointer-events:none; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%;
+  background:var(--accent); color:var(--accent-ink); display:grid; place-items:center; font-size:11px; font-weight:500;
   transform:translate3d(var(--cx,-200px), var(--cy,-200px), 0) scale(0); transition:transform .35s var(--ease); will-change:transform; }
 .cur.on{ transform:translate3d(var(--cx), var(--cy), 0) scale(1); }
 .cur-on .pcard, .cur-on .film{ cursor:none; }
@@ -496,7 +496,7 @@ body.spot-on .spot{ opacity:1; }
 .sec-title .wd{ display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:.08em; margin-bottom:-.08em; }
 .sec-title .wd > span{ display:inline-block; transform:translateY(105%); transition:transform .9s var(--ease); transition-delay:calc(var(--i) * 45ms); }
 .sec-head.in .sec-title .wd > span{ transform:none; }
-@media (hover:none), (pointer:coarse){ .spot, .cur{ display:none; } .hero-frames{ transform:none; } }
+@media (hover:none), (pointer:coarse){ .spot, .cur{ display:none; } .hero-frames{ transform:none; } .bulb{ display:none; } }
 @media (prefers-reduced-motion: reduce){ .spot, .cur{ display:none; } .sec-title .wd > span{ transform:none; } mark.hl{ background-size:100% 86%; color:var(--accent-ink); } }
 
 /* ===== Render loader (first visit per session) ===== */
@@ -1724,7 +1724,7 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     films:['Grab some popcorn.', 'Solus won a hackathon in 48 hours!', 'Ektara is in the oven right now.'],
     contact:["Say hi, I don't bite.", 'I reply faster than Cycles renders.', 'Open to internships!'],
     dark:['Who turned off the lights?', 'Lighting artist tip: find the light.', 'Press the bulb to switch them back on.'],
-    poke:['Hey!', 'That tickles.', 'Okay, okay, I’m here.', 'Press L. Trust me.']
+    poke:[‘Hey!’, ‘That tickles.’, ‘Okay, okay, I\’m here.’, ...( window.matchMedia(‘(hover:none),(pointer:coarse)’).matches ? [] : [‘Press L. Trust me.’] )]
   };
   const count = {}; let hideT, active = null, shownFor = {};
   const pick = k => { const a = lines[k]; count[k] = (count[k] || 0); return a[count[k]++ % a.length]; };
@@ -1764,7 +1764,7 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     if (on){ if (window.__peekSay) window.__peekSay('dark'); }
   }
   btn.addEventListener('click', toggle);
-  addEventListener('keydown', e => { if ((e.key === 'l' || e.key === 'L') && !e.target.closest('input, textarea') && !e.metaKey && !e.ctrlKey) toggle(); });
+  addEventListener('keydown', e => { if (window.matchMedia('(hover:none),(pointer:coarse)').matches) return; if ((e.key === 'l' || e.key === 'L') && !e.target.closest('input, textarea') && !e.metaKey && !e.ctrlKey) toggle(); });
   const pos = (x, y) => { dark.style.setProperty('--fx', x + 'px'); dark.style.setProperty('--fy', y + 'px'); };
   pos(innerWidth / 2, innerHeight / 2);
   addEventListener('pointermove', e => { if (on) pos(e.clientX, e.clientY); }, { passive:true });
