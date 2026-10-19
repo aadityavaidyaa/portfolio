@@ -496,7 +496,7 @@ body.spot-on .spot{ opacity:1; }
 .sec-title .wd > span{ display:inline-block; transform:translateY(105%); transition:transform .9s var(--ease); transition-delay:calc(var(--i) * 45ms); }
 .sec-head.in .sec-title .wd > span{ transform:none; }
 @keyframes wordCycle{ 0%{transform:translateY(0);opacity:1} 40%{transform:translateY(-110%);opacity:0} 41%{transform:translateY(112%);opacity:0} 43%{opacity:1} 100%{transform:translateY(0);opacity:1} }
-.sec-head.in .sec-title:hover .wd > span{ animation:wordCycle .6s cubic-bezier(.4,0,.2,1) both; animation-delay:calc(var(--i) * 50ms); transition:none; }
+.sec-head.in .sec-title .wd:hover > span{ animation:wordCycle .55s cubic-bezier(.4,0,.2,1) both; transition:none; }
 @media (hover:none), (pointer:coarse){ .spot, .cur{ display:none; } .hero-frames{ transform:none; } .bulb{ display:none; } }
 @media (prefers-reduced-motion: reduce){ .spot, .cur{ display:none; } .sec-title .wd > span{ transform:none; } mark.hl{ background-size:100% 86%; color:var(--accent-ink); } }
 
