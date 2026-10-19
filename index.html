@@ -493,11 +493,9 @@ body.spot-on .spot{ opacity:1; }
 /* hero image follows the mouse a little */
 .hero-frames{ transform:translate3d(var(--hx,0), var(--hy,0), 0) scale(1.04); transition:opacity 1.6s ease, transform 1.2s var(--ease); }
 /* headings: words rise in */
-.sec-title .wd{ display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:.08em; margin-bottom:-.08em; }
+.sec-title .wd{ display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:.08em; margin-bottom:-.08em; will-change:transform; }
 .sec-title .wd > span{ display:inline-block; transform:translateY(105%); transition:transform .9s var(--ease); transition-delay:calc(var(--i) * 45ms); }
 .sec-head.in .sec-title .wd > span{ transform:none; }
-@keyframes wordCycle{ 0%{transform:translateY(0);opacity:1} 40%{transform:translateY(-110%);opacity:0} 41%{transform:translateY(112%);opacity:0} 43%{opacity:1} 100%{transform:translateY(0);opacity:1} }
-.sec-title .wd > span.hop{ animation:wordCycle .55s cubic-bezier(.4,0,.2,1) both; transition:none; }
 @media (hover:none), (pointer:coarse){ .spot, .cur{ display:none; } .hero-frames{ transform:none; } .bulb{ display:none; } }
 @media (prefers-reduced-motion: reduce){ .spot, .cur{ display:none; } .sec-title .wd > span{ transform:none; } mark.hl{ background-size:100% 86%; color:var(--accent-ink); } }
 
@@ -1684,16 +1682,43 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     wrap(t);
   });
 
-  /* word hop — attach after .wd elements exist */
-  document.querySelectorAll('.sec-title .wd').forEach(wd => {
-    const span = wd.querySelector('span');
-    if (!span) return;
-    wd.addEventListener('mouseenter', () => {
-      if (span.classList.contains('hop')) return;
-      span.classList.add('hop');
-      span.addEventListener('animationend', () => span.classList.remove('hop'), { once: true });
+  /* word repulsion — words drift away from the cursor */
+  if (fine && !reduce) {
+    document.querySelectorAll('.sec-title').forEach(title => {
+      const wds = () => [...title.querySelectorAll('.wd')];
+      const RADIUS = 110, PUSH = 26, PUSH_Y = 12;
+      let rafId = 0;
+      title.addEventListener('mousemove', e => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+          rafId = 0;
+          const mx = e.clientX, my = e.clientY;
+          wds().forEach(wd => {
+            const r = wd.getBoundingClientRect();
+            const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+            const dx = mx - cx, dy = my - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < RADIUS && dist > 0) {
+              const f = Math.pow((RADIUS - dist) / RADIUS, 1.5);
+              const px = -(dx / dist) * f * PUSH;
+              const py = -(dy / dist) * f * PUSH_Y;
+              wd.style.transition = 'transform 0.12s ease-out';
+              wd.style.transform = `translate(${px.toFixed(1)}px,${py.toFixed(1)}px)`;
+            } else {
+              wd.style.transition = 'transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94)';
+              wd.style.transform = '';
+            }
+          });
+        });
+      });
+      title.addEventListener('mouseleave', () => {
+        wds().forEach(wd => {
+          wd.style.transition = 'transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94)';
+          wd.style.transform = '';
+        });
+      });
     });
-  });
+  }
 
   if (!fine || reduce) return;
   const root = document.documentElement, body = document.body, cur = document.getElementById('cur');
