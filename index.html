@@ -552,6 +552,25 @@ body{ animation:pageIn .9s ease both; }
 .hero-actions .btn-solid:hover{ background:var(--ink); color:var(--bg); }
 .hero-actions .btn-line{ border:1px solid rgba(255,255,255,.3); color:var(--ink); }
 .hero-actions .btn-line:hover{ border-color:var(--accent); color:var(--accent); }
+/* availability line */
+.hero-status{ display:flex; align-items:center; gap:9px; align-self:stretch; margin-top:4px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:rgba(241,239,234,.55); }
+.hero-status .sep{ opacity:.5; }
+.hero-status .dot{ width:7px; height:7px; border-radius:50%; background:#6FD394; flex:none; animation:statusPulse 2.6s ease-out infinite; }
+@keyframes statusPulse{ 0%{ box-shadow:0 0 0 0 rgba(111,211,148,.45); } 70%,100%{ box-shadow:0 0 0 7px rgba(111,211,148,0); } }
+/* scroll cue */
+.hero-scroll{ position:absolute; z-index:6; left:50%; bottom:26px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.42); opacity:0; transition:opacity 1s 1.6s, color .3s; }
+.hero.open .hero-scroll{ opacity:1; }
+.hero-scroll:hover{ color:var(--ink); }
+.hero-scroll i{ width:1px; height:38px; background:rgba(255,255,255,.14); position:relative; overflow:hidden; }
+.hero-scroll i::after{ content:''; position:absolute; left:0; top:0; width:100%; height:40%; background:var(--accent); animation:scrollCue 2.2s cubic-bezier(.6,0,.3,1) infinite; }
+@keyframes scrollCue{ from{ transform:translateY(-100%); } to{ transform:translateY(260%); } }
+@media (max-width:1100px){ .hero-scroll{ display:none; } }
+/* faster crossfade when the visitor picks a frame themselves */
+.hero-frames.quick .hero-frame{ transition-duration:.7s; }
+.hero{ touch-action:pan-y; }
+@media (prefers-reduced-motion: reduce){ .hero-status .dot, .hero-scroll i::after{ animation:none; } }
 @media (max-width:860px){
   .hero-content .wrap{ grid-template-columns:1fr; gap:20px; }
   .hero h1{ font-size:clamp(64px, 19vw, 96px); }
@@ -604,6 +623,7 @@ body{ animation:pageIn .9s ease both; }
             <a href="#work" class="btn btn-solid" data-hover>View work <span class="arr">↓</span></a>
             <a href="#about" class="btn btn-line" data-hover>About me</a>
           </div>
+          <p class="hero-status"><span class="dot" aria-hidden="true"></span>Open to internships<span class="sep">·</span><span id="heroLoc">Mumbai, IN</span></p>
         </div>
       </div>
     </div>
@@ -613,6 +633,7 @@ body{ animation:pageIn .9s ease both; }
       <span class="hero-num" id="heroNum"></span>
       <div class="hero-dots" id="heroDots"></div>
     </div>
+    <a class="hero-scroll" href="#about" aria-label="Scroll to content"><span>Scroll</span><i></i></a>
   </section>
 
 
@@ -745,6 +766,7 @@ const site = {
     },
     {
       "src": "images/web/1786885554121_Keyframe_5.jpg",
+      "mobile": "images/web/m/1786885554121_Keyframe_5.webp",
       "caption": "Spell.EXE, Keyframe 05"
     },
     {
@@ -753,18 +775,22 @@ const site = {
     },
     {
       "src": "images/web/skydome.jpg",
+      "mobile": "images/web/m/skydome.webp",
       "caption": "Bloomfall, Skydome"
     },
     {
       "src": "images/web/1786885541886_Keyframe_3.jpg",
+      "mobile": "images/web/m/1786885541886_Keyframe_3.webp",
       "caption": "Spell.EXE, Keyframe 03"
     },
     {
       "src": "images/web/1786885535368_Keyframe_2.jpg",
+      "mobile": "images/web/m/1786885535368_Keyframe_2.webp",
       "caption": "Spell.EXE, Keyframe 02"
     },
     {
       "src": "images/web/1786885484548_Keyframe_1.jpg",
+      "mobile": "images/web/m/1786885484548_Keyframe_1.webp",
       "caption": "Spell.EXE, Keyframe 01"
     }
   ],
@@ -1091,6 +1117,7 @@ $('#heroFirst').textContent = nameParts[0] || '';
 $('#heroLast').textContent = nameParts.slice(1).join(' ') || '';
 $('#roleText').textContent = site.role;
 $('#taglineText').textContent = site.heroTagline;
+if (site.location && $('#heroLoc')) $('#heroLoc').textContent = site.location;
 $('#contactBlurb').innerHTML = esc(site.contactBlurb).replace(/(light|shot|world)/i, '<em>$1</em>') + '<br>Let’s talk.';
 $('#footerName').textContent = site.footerName || site.name;
 $('#year').textContent = new Date().getFullYear();
@@ -1102,21 +1129,50 @@ const projectFrames = (site.projects || []).flatMap(p => [p.renders && p.renders
 const heroFrames = (site.heroFrames && site.heroFrames.length) ? site.heroFrames : projectFrames.slice(0, 5);
 const framesEl = $('#heroFrames'), dotsEl = $('#heroDots'), capEl = $('#heroCap'), numEl = $('#heroNum');
 const HERO_DUR = 6000;
-heroFrames.forEach((f, i) => {
+const heroImgs = heroFrames.map((f, i) => {
   const d = document.createElement('div');
   d.className = 'hero-frame';
-  d.innerHTML = `<img src="${esc(f.src)}" alt="${esc(f.caption || '')}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'}>`;
-  framesEl.appendChild(d);
+  const img = document.createElement('img');
+  img.alt = f.caption || ''; img.decoding = 'async';
+  if (f.mobile){ img.sizes = '100vw'; img.dataset.srcset = `${f.mobile} 1600w, ${f.src} 1920w`; }
+  img.dataset.src = f.src;
+  d.appendChild(img); framesEl.appendChild(d);
   const b = document.createElement('button');
   b.setAttribute('aria-label', 'Show frame ' + (i + 1));
   b.addEventListener('click', () => showHero(i, true));
   dotsEl.appendChild(b);
+  return img;
 });
+/* load a frame only once, resolve when it's decoded (or failed) */
+function loadHero(i){
+  const img = heroImgs[i];
+  if (!img) return Promise.resolve();
+  if (!img._p) img._p = new Promise(res => {
+    img.onload = () => res(true);
+    img.onerror = () => res(false);
+    if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+    img.src = img.dataset.src;
+    if (img.complete && img.naturalWidth) res(true);
+  });
+  return img._p;
+}
 dotsEl.style.setProperty('--dur', HERO_DUR + 'ms');
-let heroIdx = -1, heroTimer;
-function showHero(i, manual){
+let heroIdx = -1, heroTimer, heroWant = -1;
+function showHero(i, manual, dir = 1, tries = 0){
   if (!heroFrames.length) return;
-  heroIdx = (i + heroFrames.length) % heroFrames.length;
+  const n = heroFrames.length, t = (i + n) % n;
+  heroWant = t;
+  clearTimeout(heroTimer);
+  loadHero(t).then(ok => {
+    if (heroWant !== t) return;
+    if (!ok && tries < n - 1) return showHero(t + dir, manual, dir, tries + 1); /* broken image: skip it */
+    applyHero(t, manual);
+  });
+  loadHero((t + dir + n) % n); /* warm up the next one */
+}
+function applyHero(t, manual){
+  heroIdx = t;
+  framesEl.classList.toggle('quick', !!manual);
   [...framesEl.children].forEach((el, k) => el.classList.toggle('on', k === heroIdx));
   if (capEl){ const c = (heroFrames[heroIdx].caption || '').split(',')[0]; capEl.style.opacity = 0; setTimeout(() => { capEl.textContent = c; capEl.style.opacity = 1; }, 250); }
   if (numEl) numEl.textContent = `${pad(heroIdx + 1)} / ${pad(heroFrames.length)}`;
@@ -1131,7 +1187,21 @@ function sizeLetterbox(){
   hero.style.setProperty('--lb', Math.min(bar, h * 0.12) + 'px');
 }
 sizeLetterbox(); addEventListener('resize', sizeLetterbox);
-showHero(0);
+/* start on the first self-hosted frame so the first paint is fast, then preload the rest quietly */
+const heroStart = Math.max(0, heroFrames.findIndex(f => !/^https?:/i.test(f.src)));
+if (heroImgs[heroStart]) heroImgs[heroStart].setAttribute('fetchpriority', 'high');
+showHero(heroStart);
+loadHero(heroStart).then(() => {
+  const rest = heroFrames.map((_, k) => k).filter(k => k !== heroStart);
+  (function next(){ const k = rest.shift(); if (k === undefined) return; loadHero(k).then(() => setTimeout(next, 120)); })();
+});
+/* swipe the hero on touch screens */
+let hsx = 0, hsy = 0, hst = 0;
+hero.addEventListener('touchstart', e => { const t = e.touches[0]; hsx = t.clientX; hsy = t.clientY; hst = Date.now(); }, { passive:true });
+hero.addEventListener('touchend', e => {
+  const t = e.changedTouches[0], dx = t.clientX - hsx, dy = t.clientY - hsy;
+  if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3 && Date.now() - hst < 900) showHero((heroWant < 0 ? heroIdx : heroWant) + (dx < 0 ? 1 : -1), true, dx < 0 ? 1 : -1);
+}, { passive:true });
 if (document.documentElement.classList.contains('rendering')) addEventListener('render:done', () => setTimeout(() => hero.classList.add('open'), 80), { once:true });
 else requestAnimationFrame(() => setTimeout(() => hero.classList.add('open'), 150));
 
@@ -1197,7 +1267,7 @@ realProjects.forEach((p, pi) => {
   el.setAttribute('aria-label', 'Open project ' + (p.title || ''));
   el.innerHTML = `
     <div class="pcard-media">
-      <div class="frames">${frames.map((f, i) => `<img src="${esc(f)}" alt="" loading="lazy" class="${i ? '' : 'on'}">`).join('')}</div>
+      <div class="frames">${frames.map((f, i) => `<img src="${esc(f)}" alt="" loading="lazy" decoding="async" fetchpriority="low" class="${i ? '' : 'on'}">`).join('')}</div>
       ${p.video ? `<video class="pvideo" src="${esc(p.video)}" loop playsinline preload="none" aria-hidden="true"></video>` : ''}
       <span class="pcard-view">View project</span>
     </div>
@@ -1448,7 +1518,7 @@ const filmList = $('#filmList');
   el.innerHTML = `
     <div class="award-slot">${f.award ? `<span class="award mono"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M7 3h10v2h3v3a4 4 0 0 1-4 4h-.3A5 5 0 0 1 13 14.9V17h3v2H8v-2h3v-2.1A5 5 0 0 1 8.3 12H8a4 4 0 0 1-4-4V5h3V3zm0 4H6v1a2 2 0 0 0 1 1.7V7zm10 0v2.7A2 2 0 0 0 18 8V7h-1zM7 20h10v1H7z"/></svg>${esc(f.award)}</span>` : ''}</div>
     <div class="poster">
-      ${f.image ? `<img class="pbg" src="${esc(f.image)}" alt="" aria-hidden="true" loading="lazy"><img class="pmain" src="${esc(f.image)}" alt="${esc(f.title)} poster" loading="lazy">` : `<div class="poster-ph"><span class="t">${esc(f.title)}</span><span class="s mono">In production · ${esc(f.date || '')}</span></div>`}
+      ${f.image ? `<img class="pbg" src="${esc(f.image)}" alt="" aria-hidden="true" loading="lazy"><img class="pmain" src="${esc(f.image)}" alt="${esc(f.title)} poster" loading="lazy" decoding="async" fetchpriority="low">` : `<div class="poster-ph"><span class="t">${esc(f.title)}</span><span class="s mono">In production · ${esc(f.date || '')}</span></div>`}
       <div class="glare"></div>
       ${released && target ? '<span class="play"></span>' : ''}
     </div>
