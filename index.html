@@ -146,6 +146,8 @@ header.hide{ transform:translateY(-100%); }
   display:flex; gap:16px; align-items:center; font-size:13px;
 }
 .hero-cap{ transition:opacity .5s; text-align:right; }
+.hero-cap.link{ cursor:pointer; text-decoration:underline; text-decoration-color:rgba(255,255,255,.25); text-underline-offset:4px; transition:opacity .5s, color .25s, text-decoration-color .25s; }
+.hero-cap.link:hover{ color:var(--ink); text-decoration-color:var(--accent); }
 .hero-num{ white-space:nowrap; color:rgba(255,255,255,.4); font-family:var(--mono); font-size:11px; letter-spacing:.06em; font-variant-numeric:tabular-nums; }
 .hero-dots{ display:flex; gap:5px; }
 .hero-dots button{ width:18px; height:2px; background:rgba(255,255,255,.22); position:relative; overflow:hidden; }
@@ -552,12 +554,6 @@ body{ animation:pageIn .9s ease both; }
 .hero-actions .btn-solid:hover{ background:var(--ink); color:var(--bg); }
 .hero-actions .btn-line{ border:1px solid rgba(255,255,255,.3); color:var(--ink); }
 .hero-actions .btn-line:hover{ border-color:var(--accent); color:var(--accent); }
-/* availability line */
-.hero-status{ display:flex; align-items:center; gap:9px; align-self:stretch; margin-top:4px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08);
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:rgba(241,239,234,.55); }
-.hero-status .sep{ opacity:.5; }
-.hero-status .dot{ width:7px; height:7px; border-radius:50%; background:#6FD394; flex:none; animation:statusPulse 2.6s ease-out infinite; }
-@keyframes statusPulse{ 0%{ box-shadow:0 0 0 0 rgba(111,211,148,.45); } 70%,100%{ box-shadow:0 0 0 7px rgba(111,211,148,0); } }
 /* scroll cue */
 .hero-scroll{ position:absolute; z-index:6; left:50%; bottom:26px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:10px;
   font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.42); opacity:0; transition:opacity 1s 1.6s, color .3s; }
@@ -570,7 +566,7 @@ body{ animation:pageIn .9s ease both; }
 /* faster crossfade when the visitor picks a frame themselves */
 .hero-frames.quick .hero-frame{ transition-duration:.7s; }
 .hero{ touch-action:pan-y; }
-@media (prefers-reduced-motion: reduce){ .hero-status .dot, .hero-scroll i::after{ animation:none; } }
+@media (prefers-reduced-motion: reduce){ .hero-scroll i::after{ animation:none; } }
 @media (max-width:860px){
   .hero-content .wrap{ grid-template-columns:1fr; gap:20px; }
   .hero h1{ font-size:clamp(64px, 19vw, 96px); }
@@ -623,7 +619,6 @@ body{ animation:pageIn .9s ease both; }
             <a href="#work" class="btn btn-solid" data-hover>View work <span class="arr">↓</span></a>
             <a href="#about" class="btn btn-line" data-hover>About me</a>
           </div>
-          <p class="hero-status"><span class="dot" aria-hidden="true"></span>Open to internships<span class="sep">·</span><span id="heroLoc">Mumbai, IN</span></p>
         </div>
       </div>
     </div>
@@ -1117,7 +1112,6 @@ $('#heroFirst').textContent = nameParts[0] || '';
 $('#heroLast').textContent = nameParts.slice(1).join(' ') || '';
 $('#roleText').textContent = site.role;
 $('#taglineText').textContent = site.heroTagline;
-if (site.location && $('#heroLoc')) $('#heroLoc').textContent = site.location;
 $('#contactBlurb').innerHTML = esc(site.contactBlurb).replace(/(light|shot|world)/i, '<em>$1</em>') + '<br>Let’s talk.';
 $('#footerName').textContent = site.footerName || site.name;
 $('#year').textContent = new Date().getFullYear();
@@ -1157,7 +1151,7 @@ function loadHero(i){
   return img._p;
 }
 dotsEl.style.setProperty('--dur', HERO_DUR + 'ms');
-let heroIdx = -1, heroTimer, heroWant = -1;
+let heroIdx = -1, heroTimer, heroWant = -1, heroVisible = true;
 function showHero(i, manual, dir = 1, tries = 0){
   if (!heroFrames.length) return;
   const n = heroFrames.length, t = (i + n) % n;
@@ -1174,11 +1168,21 @@ function applyHero(t, manual){
   heroIdx = t;
   framesEl.classList.toggle('quick', !!manual);
   [...framesEl.children].forEach((el, k) => el.classList.toggle('on', k === heroIdx));
-  if (capEl){ const c = (heroFrames[heroIdx].caption || '').split(',')[0]; capEl.style.opacity = 0; setTimeout(() => { capEl.textContent = c; capEl.style.opacity = 1; }, 250); }
+  if (capEl){
+    const c = (heroFrames[heroIdx].caption || '').split(',')[0];
+    capEl.style.opacity = 0;
+    setTimeout(() => {
+      capEl.textContent = c;
+      const has = typeof projectBySlug === 'function' && !!projectBySlug(slugOf(c));
+      capEl.classList.toggle('link', has);
+      capEl.title = has ? 'Open ' + c : '';
+      capEl.style.opacity = 1;
+    }, 250);
+  }
   if (numEl) numEl.textContent = `${pad(heroIdx + 1)} / ${pad(heroFrames.length)}`;
   [...dotsEl.children].forEach((el, k) => { el.classList.remove('on'); if (k === heroIdx){ void el.offsetWidth; el.classList.add('on'); } });
   clearTimeout(heroTimer);
-  if (!reduce) heroTimer = setTimeout(() => showHero(heroIdx + 1), HERO_DUR);
+  if (!reduce && !document.hidden && heroVisible) heroTimer = setTimeout(() => showHero(heroIdx + 1), HERO_DUR);
 }
 const hero = $('#hero');
 function sizeLetterbox(){
@@ -1387,6 +1391,8 @@ if (false){
   projWrap.appendChild(soon);
 }
 
+function slugOf(t){ return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+function projectBySlug(sl){ return realProjects.find(p => slugOf(p.title) === sl); }
 function openProject(p, startIdx){
   const r = p.renders || { final: p.image || null, clay: null, viewport: null };
   const frames = framesOf(p);
@@ -1469,8 +1475,10 @@ function openProject(p, startIdx){
   media.stopPreviews(); media.pauseYouTube();
   clearTimeout(pm._clear);
   pm.classList.add('open'); document.body.style.overflow = 'hidden';
+  try { history.replaceState(null, '', '#project/' + slugOf(p.title)); } catch(e){}
 }
 function closeProject(){
+  if (/^#project\//.test(location.hash)){ try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} }
   media.hold = true; media.stopPreviews();
   pm.classList.remove('open'); document.body.style.overflow = '';
   pm.querySelectorAll('video').forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
@@ -1478,6 +1486,36 @@ function closeProject(){
   pm._clear = setTimeout(() => { if (!pm.classList.contains('open')) $('#pmInner').innerHTML = ''; }, 400);
 }
 $('#pmClose').onclick = closeProject;
+/* hero caption: click the title of the artwork to open that project */
+if (capEl){
+  capEl.addEventListener('click', () => { const pr = projectBySlug(slugOf(capEl.textContent)); if (pr) openProject(pr, 0); });
+}
+/* direct links: yoursite/#project/spell-exe opens that project straight away */
+function openFromHash(){
+  const m = location.hash.match(/^#project\/([a-z0-9-]+)/);
+  if (!m) return;
+  const pr = projectBySlug(m[1]);
+  if (pr && !pm.classList.contains('open')) openProject(pr, 0);
+}
+openFromHash();
+addEventListener('hashchange', openFromHash);
+/* hero: pause the slideshow when it's off screen or the tab is hidden, arrow keys flip frames */
+new IntersectionObserver(([en]) => {
+  const was = heroVisible;
+  heroVisible = en.isIntersecting;
+  if (!heroVisible) clearTimeout(heroTimer);
+  else if (!was && !document.hidden) showHero(heroIdx + 1);
+}, { threshold:0.15 }).observe(hero);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) clearTimeout(heroTimer);
+  else if (heroVisible && heroIdx >= 0) showHero(heroIdx + 1);
+});
+addEventListener('keydown', e => {
+  if (!heroVisible || e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, [contenteditable]')) return;
+  if (document.querySelector('.lb.open')) return;
+  if (e.key === 'ArrowRight') showHero(heroIdx + 1, true, 1);
+  if (e.key === 'ArrowLeft') showHero(heroIdx - 1, true, -1);
+});
 pm.addEventListener('click', (e) => { if (e.target.classList.contains('lb-body')) closeProject(); });
 
 /* ---------- films ---------- */
