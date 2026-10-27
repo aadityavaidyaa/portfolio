@@ -526,6 +526,7 @@ body:has(.lb.open) .peek{ display:none; }
 .bulb:hover{ color:var(--accent); border-color:var(--accent); }
 .bulb svg{ width:16px; height:16px; }
 .lights-out .bulb{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+@media (hover:none), (pointer:coarse), (max-width:860px){ .bulb{ display:none; } }
 .dark{ position:fixed; inset:0; z-index:930; pointer-events:none; background:#030303; opacity:0; transition:opacity .6s ease;
   -webkit-mask-image:radial-gradient(circle var(--fr,230px) at var(--fx,50%) var(--fy,50%), transparent 0%, transparent 35%, rgba(0,0,0,.85) 70%, #000 100%);
           mask-image:radial-gradient(circle var(--fr,230px) at var(--fx,50%) var(--fy,50%), transparent 0%, transparent 35%, rgba(0,0,0,.85) 70%, #000 100%); }
