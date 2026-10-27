@@ -574,6 +574,53 @@ body{ animation:pageIn .9s ease both; }
   .hero-side{ max-width:none; padding:18px 18px 20px; }
   .hero-tagline{ font-size:15.5px; }
 }
+/* ===== Experience & Volunteering ===== */
+.xp-sec{ border-top:1px solid var(--line); }
+.xc + .xc{ margin-top:clamp(16px,2vw,24px); }
+.xc{ position:relative; overflow:hidden; display:grid; grid-template-columns:56px minmax(0,1fr); gap:clamp(18px,2.4vw,32px);
+  padding:clamp(24px,3vw,40px); border:1px solid var(--line); border-radius:16px;
+  background:linear-gradient(140deg, rgba(255,255,255,.035), rgba(255,255,255,.01) 55%);
+  transition:border-color .4s, background .4s, transform .5s var(--ease), opacity .9s ease; }
+.xc::before{ content:''; position:absolute; left:0; top:0; height:2px; width:100%; background:linear-gradient(90deg, var(--accent), transparent 70%); transform:scaleX(0); transform-origin:left; transition:transform .7s var(--ease); }
+.xc.in:hover{ transform:translateY(-3px); }
+.xc:hover{ border-color:color-mix(in srgb, var(--accent) 30%, var(--line)); }
+.xc:hover::before{ transform:scaleX(1); }
+.xc-year{ position:absolute; right:clamp(20px,3vw,44px); top:50%; transform:translateY(-50%); pointer-events:none;
+  font-family:'Instrument Serif', Georgia, serif; font-style:italic; font-size:clamp(90px,11vw,170px); line-height:1; letter-spacing:-.03em;
+  color:transparent; -webkit-text-stroke:1px rgba(255,255,255,.14); transition:-webkit-text-stroke-color .5s; }
+.xc-year i{ font-style:italic; opacity:.6; margin:0 .02em; }
+.xc:hover .xc-year{ -webkit-text-stroke-color:color-mix(in srgb, var(--accent) 45%, transparent); }
+.xc-logo{ width:56px; height:56px; border-radius:14px; display:grid; place-items:center;
+  font-family:'Instrument Serif', Georgia, serif; font-style:italic; font-size:30px; color:var(--accent);
+  background:color-mix(in srgb, var(--accent) 12%, transparent); border:1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
+.xc-body{ position:relative; max-width:660px; }
+.xc-meta{ display:flex; flex-wrap:wrap; gap:6px 0; font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); }
+.xc-meta span + span::before{ content:'/'; margin:0 10px; opacity:.5; }
+.xc-meta span:first-child{ color:var(--accent); }
+.xc-role{ margin-top:12px; font-size:clamp(24px,2.4vw,34px); font-weight:500; letter-spacing:-.025em; line-height:1.15; color:var(--ink); }
+.xc-org{ margin-top:6px; color:var(--dim); font-size:16px; }
+.xc-desc{ margin-top:14px; color:var(--dim); font-size:15.5px; line-height:1.65; }
+.xc-tags{ list-style:none; display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 0; padding:0; }
+.xc-tags li{ font-size:12.5px; color:var(--ink); background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:100px; padding:6px 13px; }
+/* timeline inside the AniMela card */
+.xc-tl{ list-style:none; margin:24px 0 0; padding:0; position:relative; }
+.xc-tl::before{ content:''; position:absolute; left:5px; top:8px; bottom:8px; width:1px; background:linear-gradient(var(--accent), var(--line)); }
+.xc-tl li{ position:relative; padding-left:32px; }
+.xc-tl li + li{ margin-top:26px; }
+.xc-tl li::before{ content:''; position:absolute; left:0; top:5px; width:11px; height:11px; border-radius:50%; background:var(--bg); border:2px solid var(--accent); }
+.xc-tl li:first-child::before{ background:var(--accent); box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
+.xc-tl-when{ font-family:var(--mono); font-size:12px; letter-spacing:.04em; color:var(--dim); }
+.xc-tl-when span{ color:var(--faint); margin-left:10px; }
+.xc-tl h4{ margin-top:6px; font-size:18px; font-weight:500; letter-spacing:-.01em; color:var(--ink); display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; }
+.xc-tl .xc-desc{ margin-top:8px; font-size:15px; }
+.xc-badge{ font-family:var(--mono); font-size:10px; font-weight:400; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-ink); background:var(--accent); border-radius:100px; padding:3px 9px; }
+@media (max-width:700px){
+  .xc{ grid-template-columns:1fr; gap:16px; padding:22px 20px 24px; }
+  .xc-logo{ width:46px; height:46px; border-radius:12px; font-size:25px; }
+  .xc-year{ top:18px; right:18px; transform:none; font-size:64px; }
+  .xc-role{ margin-top:10px; }
+}
+@media (hover:none){ .xc::before{ transform:scaleX(1); } }
 </style>
 </head>
 <body>
@@ -593,6 +640,7 @@ body{ animation:pageIn .9s ease both; }
       <li><a href="#about">About</a></li>
       <li><a href="#work">Work</a></li>
       <li><a href="#films">Films</a></li>
+      <li><a href="#experience">Experience</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-right">
@@ -691,6 +739,52 @@ body{ animation:pageIn .9s ease both; }
         </div>
       </div>
       <div class="films" id="filmList"></div>
+    </div>
+  </section>
+
+  <section id="experience" class="xp-sec">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div>
+          <span class="sec-label">Experience</span>
+          <h2 class="sec-title">Experience, <em>beyond the classroom.</em></h2>
+          <p class="sec-sub sec-sub--under">Internships and festival work that taught me how real productions run: deadlines, hand-offs and making sure the tech just works.</p>
+        </div>
+      </div>
+
+      <article class="xc reveal">
+        <span class="xc-year" aria-hidden="true">2025</span>
+        <div class="xc-logo" aria-hidden="true">N</div>
+        <div class="xc-body">
+          <p class="xc-meta"><span>Internship</span><span>Apr → May 2025</span><span>2 months</span><span>Remote</span></p>
+          <h3 class="xc-role">Motion Graphics Designer Intern</h3>
+          <p class="xc-org">The NAMESPACE Community</p>
+          <p class="xc-desc">Designed motion graphics for the community's hackathon, used across their social media.</p>
+          <ul class="xc-tags"><li>After Effects</li><li>Premiere Pro</li></ul>
+        </div>
+      </article>
+      <article class="xc reveal">
+        <span class="xc-year" aria-hidden="true">25<i>/</i>26</span>
+        <div class="xc-logo" aria-hidden="true">A</div>
+        <div class="xc-body">
+          <p class="xc-meta"><span>Volunteering</span><span>2 festival seasons</span><span>Arts and Culture</span></p>
+          <h3 class="xc-role">AniMela</h3>
+          <p class="xc-org">VR Technical Volunteer</p>
+          <ol class="xc-tl">
+            <li>
+              <p class="xc-tl-when">Feb 2026 <span>1 month</span></p>
+              <h4>VR Technical Volunteer</h4>
+              <p class="xc-desc">Handled the technical setup of the festival's VR experiences and made sure every application ran smoothly for visitors.</p>
+            </li>
+            <li>
+              <p class="xc-tl-when">Mar 2025 <span>1 month</span></p>
+              <h4>VR Department In-charge <span class="xc-badge">Lead</span></h4>
+              <p class="xc-desc">Coordinated the VR department and ran the festival's XR experiences from setup to the last visitor.</p>
+            </li>
+          </ol>
+          <ul class="xc-tags"><li>VR setup</li><li>XR</li><li>Team coordination</li><li>Tech support</li></ul>
+        </div>
+      </article>
     </div>
   </section>
 
@@ -1639,7 +1733,7 @@ const navAs = [...document.querySelectorAll('#navLinks a')];
 const spy = new IntersectionObserver((ents) => ents.forEach(en => {
   if (en.isIntersecting) navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
 }), { rootMargin:'-45% 0px -50% 0px' });
-['about','work','films','contact'].forEach(id => spy.observe(document.getElementById(id)));
+['about','work','films','experience','contact'].forEach(id => spy.observe(document.getElementById(id)));
 
 /* ---------- reveal ---------- */
 const io = new IntersectionObserver((ents) => ents.forEach(en => {
