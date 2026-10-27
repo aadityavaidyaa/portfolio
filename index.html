@@ -1937,6 +1937,14 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
       'Every film here broke something in my laptop.',
       'My films are like my children. Chaotic.',
     ],
+    experience:[
+      'Some work outside class.',
+      'This is where I got my hands dirty.',
+      'Still adding to this list!',
+      'Every bit of this taught me something.',
+      'Small list, big lessons.',
+      'More coming soon, hopefully.',
+    ],
     contact:[
       "Say hi, I don't bite.",
       'I reply faster than Cycles renders.',
@@ -1978,7 +1986,7 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     clearTimeout(hideT); hideT = setTimeout(() => { bubble.classList.remove('show'); peek.classList.add('tuck'); }, ms);
   }
   const show = on => peek.classList.toggle('show', on);
-  const ids = ['hero', 'about', 'work', 'films', 'contact'];
+  const ids = ['hero', 'about', 'work', 'films', 'experience', 'contact'];
   const ratios = {};
   const io = new IntersectionObserver(es => {
     es.forEach(e => ratios[e.target.id] = e.intersectionRatio);
