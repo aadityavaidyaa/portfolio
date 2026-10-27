@@ -576,8 +576,10 @@ body{ animation:pageIn .9s ease both; }
 }
 /* ===== Experience & Volunteering ===== */
 .xp-sec{ border-top:1px solid var(--line); }
-.xc + .xc{ margin-top:clamp(16px,2vw,24px); }
-.xc{ position:relative; overflow:hidden; display:grid; grid-template-columns:56px minmax(0,1fr); gap:clamp(18px,2.4vw,32px);
+.xc-head{ display:flex; align-items:center; gap:16px; margin:0 0 clamp(14px,1.6vw,20px); font-size:clamp(20px,1.9vw,26px); font-weight:500; letter-spacing:-.02em; color:var(--ink); }
+.xc-head::after{ content:''; flex:1; height:1px; background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 50%, transparent), var(--line) 40%, transparent); }
+.xc + .xc-head{ margin-top:clamp(40px,5vw,64px); }
+.xc{ position:relative; overflow:hidden; display:grid; grid-template-columns:minmax(0,1fr);
   padding:clamp(24px,3vw,40px); border:1px solid var(--line); border-radius:16px;
   background:linear-gradient(140deg, rgba(255,255,255,.035), rgba(255,255,255,.01) 55%);
   transition:border-color .4s, background .4s, transform .5s var(--ease), opacity .9s ease; }
@@ -585,18 +587,9 @@ body{ animation:pageIn .9s ease both; }
 .xc.in:hover{ transform:translateY(-3px); }
 .xc:hover{ border-color:color-mix(in srgb, var(--accent) 30%, var(--line)); }
 .xc:hover::before{ transform:scaleX(1); }
-.xc-year{ position:absolute; right:clamp(20px,3vw,44px); top:50%; transform:translateY(-50%); pointer-events:none;
-  font-family:'Instrument Serif', Georgia, serif; font-style:italic; font-size:clamp(90px,11vw,170px); line-height:1; letter-spacing:-.03em;
-  color:transparent; -webkit-text-stroke:1px rgba(255,255,255,.14); transition:-webkit-text-stroke-color .5s; }
-.xc-year i{ font-style:italic; opacity:.6; margin:0 .02em; }
-.xc:hover .xc-year{ -webkit-text-stroke-color:color-mix(in srgb, var(--accent) 45%, transparent); }
-.xc-logo{ width:56px; height:56px; border-radius:14px; display:grid; place-items:center;
-  font-family:'Instrument Serif', Georgia, serif; font-style:italic; font-size:30px; color:var(--accent);
-  background:color-mix(in srgb, var(--accent) 12%, transparent); border:1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
-.xc-body{ position:relative; max-width:660px; }
+.xc:hover .xc-body{ position:relative; max-width:660px; }
 .xc-meta{ display:flex; flex-wrap:wrap; gap:6px 0; font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); }
 .xc-meta span + span::before{ content:'/'; margin:0 10px; opacity:.5; }
-.xc-meta span:first-child{ color:var(--accent); }
 .xc-role{ margin-top:12px; font-size:clamp(24px,2.4vw,34px); font-weight:500; letter-spacing:-.025em; line-height:1.15; color:var(--ink); }
 .xc-org{ margin-top:6px; color:var(--dim); font-size:16px; }
 .xc-desc{ margin-top:14px; color:var(--dim); font-size:15.5px; line-height:1.65; }
@@ -615,11 +608,8 @@ body{ animation:pageIn .9s ease both; }
 .xc-tl .xc-desc{ margin-top:8px; font-size:15px; }
 .xc-badge{ font-family:var(--mono); font-size:10px; font-weight:400; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-ink); background:var(--accent); border-radius:100px; padding:3px 9px; }
 @media (max-width:700px){
-  .xc{ grid-template-columns:1fr; gap:16px; padding:22px 20px 24px; }
-  .xc-logo{ width:46px; height:46px; border-radius:12px; font-size:25px; }
-  .xc-year{ top:18px; right:18px; transform:none; font-size:64px; }
-  .xc-role{ margin-top:10px; }
-}
+  .xc{ padding:22px 20px 24px; }
+    }
 @media (hover:none){ .xc::before{ transform:scaleX(1); } }
 </style>
 </head>
@@ -752,22 +742,20 @@ body{ animation:pageIn .9s ease both; }
         </div>
       </div>
 
+      <h3 class="xc-head reveal">Internships</h3>
       <article class="xc reveal">
-        <span class="xc-year" aria-hidden="true">2025</span>
-        <div class="xc-logo" aria-hidden="true">N</div>
         <div class="xc-body">
-          <p class="xc-meta"><span>Internship</span><span>Apr → May 2025</span><span>2 months</span><span>Remote</span></p>
+          <p class="xc-meta"><span>Apr → May 2025</span><span>2 months</span><span>Remote</span></p>
           <h3 class="xc-role">Motion Graphics Designer Intern</h3>
           <p class="xc-org">The NAMESPACE Community</p>
           <p class="xc-desc">Designed motion graphics for the community's hackathon, used across their social media.</p>
           <ul class="xc-tags"><li>After Effects</li><li>Premiere Pro</li></ul>
         </div>
       </article>
+      <h3 class="xc-head reveal">Volunteering</h3>
       <article class="xc reveal">
-        <span class="xc-year" aria-hidden="true">25<i>/</i>26</span>
-        <div class="xc-logo" aria-hidden="true">A</div>
         <div class="xc-body">
-          <p class="xc-meta"><span>Volunteering</span><span>2 festival seasons</span><span>Arts and Culture</span></p>
+          <p class="xc-meta"><span>2 festival seasons</span><span>Arts and Culture</span></p>
           <h3 class="xc-role">AniMela</h3>
           <p class="xc-org">VR Technical Volunteer</p>
           <ol class="xc-tl">
@@ -1939,10 +1927,11 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
     ],
     experience:[
       'Some work outside class.',
+      'This is where I got my hands dirty.',
       'Still adding to this list!',
       'Every bit of this taught me something.',
       'Small list, big lessons.',
-      'More coming soon!',
+      'More coming soon, hopefully.',
     ],
     contact:[
       "Say hi, I don't bite.",
@@ -1971,6 +1960,7 @@ document.querySelectorAll('.reveal, .wipe').forEach((el, i) => {
       'Do it again, I dare you.',
       'Okay fine, hi.',
       'Yes, hello, what.',
+      'I am a professional. Mostly.',
     ]
   };
   const count = {}; let hideT, active = null, shownFor = {};
